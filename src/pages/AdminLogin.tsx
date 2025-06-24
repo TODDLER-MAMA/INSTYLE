@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Lock, User, Eye, EyeOff } from 'lucide-react'
+import { Lock, User, Eye, EyeOff, Shield } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const AdminLogin: React.FC = () => {
@@ -13,7 +13,7 @@ const AdminLogin: React.FC = () => {
   const { state, login } = useAuth()
 
   // Redirect if already authenticated
-  if (state.isAuthenticated) {
+  if (state.isAuthenticated && state.isAdmin) {
     return <Navigate to="/admin" replace />
   }
 
@@ -37,18 +37,31 @@ const AdminLogin: React.FC = () => {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-gradient-to-r from-gold-600 to-gold-700 rounded-full flex items-center justify-center">
-              <Lock className="w-8 h-8 text-white" />
+              <Shield className="w-8 h-8 text-white" />
             </div>
           </div>
           <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2">
-            Admin Login
+            Admin Access Only
           </h2>
           <p className="text-gray-600">
-            Sign in to access the admin dashboard
+            Restricted access for authorized personnel only
           </p>
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <Lock className="w-5 h-5 text-red-600 mr-2" />
+              <p className="text-sm text-red-700 font-medium">
+                Security Notice
+              </p>
+            </div>
+            <p className="text-sm text-red-600 mt-1">
+              Only the authorized admin (instylebd86@gmail.com) can access this system. 
+              Unauthorized access attempts are logged and monitored.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -58,7 +71,7 @@ const AdminLogin: React.FC = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Admin Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -71,14 +84,14 @@ const AdminLogin: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-colors duration-300"
-                  placeholder="admin@instylebd.com"
+                  placeholder="instylebd86@gmail.com"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                Admin Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -91,7 +104,7 @@ const AdminLogin: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-colors duration-300"
-                  placeholder="Enter your password"
+                  placeholder="Enter admin password"
                 />
                 <button
                   type="button"
@@ -115,7 +128,7 @@ const AdminLogin: React.FC = () => {
               {isLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
               ) : (
-                'Sign In'
+                'Access Admin Panel'
               )}
             </button>
           </form>
@@ -123,7 +136,10 @@ const AdminLogin: React.FC = () => {
 
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            Authorized personnel only. Unauthorized access is prohibited.
+            This system is protected by advanced security measures.
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            All access attempts are logged for security purposes.
           </p>
         </div>
       </div>

@@ -5,11 +5,12 @@ interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   user: any | null
+  isAdmin: boolean
 }
 
 type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_AUTHENTICATED'; payload: { user: any } }
+  | { type: 'SET_AUTHENTICATED'; payload: { user: any; isAdmin: boolean } }
   | { type: 'SET_UNAUTHENTICATED' }
 
 const AuthContext = createContext<{
@@ -26,13 +27,15 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return { 
         isAuthenticated: true, 
         isLoading: false, 
-        user: action.payload.user 
+        user: action.payload.user,
+        isAdmin: action.payload.isAdmin
       }
     case 'SET_UNAUTHENTICATED':
       return { 
         isAuthenticated: false, 
         isLoading: false, 
-        user: null 
+        user: null,
+        isAdmin: false
       }
     default:
       return state
@@ -43,8 +46,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [state, dispatch] = useReducer(authReducer, {
     isAuthenticated: false,
     isLoading: true,
-    user: null
+    user: null,
+    isAdmin: false
   })
+
+  const checkAdminStatus = (user: any): boolean => {
+    // Only allow the specific admin email
+    return user?.email === 'instylebd86@gmail.com'
+  }
 
   useEffect(() => {
     // Check initial auth state
@@ -52,7 +61,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
-          dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user } })
+          const isAdmin = checkAdminStatus(session.user)
+          if (isAdmin) {
+            dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user, isAdmin } })
+          } else {
+            // If user is not admin, sign them out
+            await supabase.auth.signOut()
+            dispatch({ type: 'SET_UNAUTHENTICATED' })
+          }
         } else {
           dispatch({ type: 'SET_UNAUTHENTICATED' })
         }
@@ -65,9 +81,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     checkAuth()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user } })
+        const isAdmin = checkAdminStatus(session.user)
+        if (isAdmin) {
+          dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user, isAdmin } })
+        } else {
+          // If user is not admin, sign them out
+          await supabase.auth.signOut()
+          dispatch({ type: 'SET_UNAUTHENTICATED' })
+        }
       } else {
         dispatch({ type: 'SET_UNAUTHENTICATED' })
       }
@@ -78,6 +101,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string) => {
     dispatch({ type: 'SET_LOADING', payload: true })
+    
+    // Check if the email is the authorized admin email
+    if (email !== 'instylebd86@gmail.com') {
+      dispatch({ type: 'SET_UNAUTHENTICATED' })
+      return { success: false, error: 'Access denied. Only authorized admin can login.' }
+    }
     
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -91,8 +120,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       if (data.user) {
-        dispatch({ type: 'SET_AUTHENTICATED', payload: { user: data.user } })
-        return { success: true }
+        const isAdmin = checkAdminStatus(data.user)
+        if (isAdmin) {
+          dispatch({ type: 'SET_AUTHENTICATED', payload: { user: data.user, isAdmin } })
+          return { success: true }
+        } else {
+          // Sign out non-admin users
+          await supabase.auth.signOut()
+          dispatch({ type: 'SET_UNAUTHENTICATED' })
+          return { success: false, error: 'Access denied. Only authorized admin can login.' }
+        }
       }
 
       dispatch({ type: 'SET_UNAUTHENTICATED' })
