@@ -1,6 +1,6 @@
-import React from 'react'
-import { ShoppingBag, Heart } from 'lucide-react'
-import { Product } from '../types'
+import React, { useState } from 'react'
+import { ShoppingBag, Heart, Eye } from 'lucide-react'
+import { Product, ProductVariant } from '../types'
 import { useCart } from '../contexts/CartContext'
 
 interface ProductCardProps {
@@ -10,10 +10,19 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { dispatch } = useCart()
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    product.variants?.find(v => v.is_default) || product.variants?.[0] || null
+  )
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation()
-    dispatch({ type: 'ADD_ITEM', payload: product })
+    dispatch({ 
+      type: 'ADD_ITEM', 
+      payload: { 
+        product, 
+        variant: selectedVariant || undefined 
+      } 
+    })
   }
 
   const formatPrice = (price: number) => {
@@ -24,6 +33,36 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     }).format(price)
   }
 
+  const getDisplayPrice = () => {
+    if (selectedVariant) {
+      return selectedVariant.price
+    }
+    if (product.variants && product.variants.length > 0) {
+      const prices = product.variants.map(v => v.price)
+      const minPrice = Math.min(...prices)
+      const maxPrice = Math.max(...prices)
+      return minPrice === maxPrice ? minPrice : `${minPrice} - ${maxPrice}`
+    }
+    return product.price || product.base_price || 0
+  }
+
+  const getDisplayStock = () => {
+    if (selectedVariant) {
+      return selectedVariant.stock
+    }
+    if (product.variants && product.variants.length > 0) {
+      return product.variants.reduce((total, variant) => total + variant.stock, 0)
+    }
+    return product.stock || 0
+  }
+
+  const primaryImage = product.images?.find(img => img.is_primary)?.image_url || 
+                      product.images?.[0]?.image_url || 
+                      product.image_url
+
+  const displayPrice = getDisplayPrice()
+  const displayStock = getDisplayStock()
+
   return (
     <div 
       className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group overflow-hidden"
@@ -31,7 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     >
       <div className="relative overflow-hidden">
         <img
-          src={product.image_url}
+          src={primaryImage}
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -39,23 +78,34 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex space-x-2">
             <button
               onClick={handleAddToCart}
-              className="bg-white text-gray-900 p-2 rounded-full hover:bg-gold-100 transition-colors duration-300"
+              disabled={displayStock === 0}
+              className="bg-white text-gray-900 p-2 rounded-full hover:bg-gold-100 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ShoppingBag className="w-5 h-5" />
             </button>
             <button className="bg-white text-gray-900 p-2 rounded-full hover:bg-gold-100 transition-colors duration-300">
               <Heart className="w-5 h-5" />
             </button>
+            <button className="bg-white text-gray-900 p-2 rounded-full hover:bg-gold-100 transition-colors duration-300">
+              <Eye className="w-5 h-5" />
+            </button>
           </div>
         </div>
-        {product.stock < 10 && product.stock > 0 && (
+        
+        {/* Stock indicators */}
+        {displayStock < 10 && displayStock > 0 && (
           <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-            Only {product.stock} left
+            Only {displayStock} left
           </div>
         )}
-        {product.stock === 0 && (
+        {displayStock === 0 && (
           <div className="absolute top-2 left-2 bg-gray-500 text-white px-2 py-1 rounded text-xs font-medium">
             Out of Stock
+          </div>
+        )}
+        {product.is_featured && (
+          <div className="absolute top-2 right-2 bg-gold-500 text-white px-2 py-1 rounded text-xs font-medium">
+            Featured
           </div>
         )}
       </div>
@@ -65,6 +115,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <span className="text-xs text-gold-600 font-medium uppercase tracking-wide">
             {product.category} • {product.subcategory}
           </span>
+          {product.brand && (
+            <span className="text-xs text-gray-500 ml-2">by {product.brand}</span>
+          )}
         </div>
         
         <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-gold-600 transition-colors duration-300">
@@ -74,18 +127,39 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>
+
+        {/* Variant selector */}
+        {product.variants && product.variants.length > 1 && (
+          <div className="mb-3">
+            <select
+              value={selectedVariant?.id || ''}
+              onChange={(e) => {
+                const variant = product.variants?.find(v => v.id === e.target.value)
+                setSelectedVariant(variant || null)
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full text-xs border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-gold-500"
+            >
+              {product.variants.map(variant => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.variant_name} - {formatPrice(variant.price)}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         
         <div className="flex items-center justify-between">
           <span className="text-lg font-bold text-gold-600">
-            {formatPrice(product.price)}
+            {typeof displayPrice === 'number' ? formatPrice(displayPrice) : `৳${displayPrice}`}
           </span>
           
           <button
             onClick={handleAddToCart}
-            disabled={product.stock === 0}
+            disabled={displayStock === 0}
             className="bg-gold-600 hover:bg-gold-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors duration-300 text-sm font-medium"
           >
-            {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+            {displayStock === 0 ? 'Out of Stock' : 'Add to Cart'}
           </button>
         </div>
       </div>
