@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ShoppingBag, Heart, Share2, Star, Truck, Shield, RotateCcw } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, Heart, Share2, Star, Truck, Shield, RotateCcw, Plus, Minus } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Product, ProductVariant } from '../types'
 import { useCart } from '../contexts/CartContext'
@@ -15,6 +15,7 @@ const ProductDetail: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'details' | 'reviews' | 'discussion'>('details')
 
   useEffect(() => {
     if (id) {
@@ -66,14 +67,15 @@ const ProductDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      dispatch({ 
-        type: 'ADD_ITEM', 
-        payload: { 
-          product, 
-          variant: selectedVariant || undefined,
-          quantity 
-        } 
-      })
+      for (let i = 0; i < quantity; i++) {
+        dispatch({ 
+          type: 'ADD_ITEM', 
+          payload: { 
+            product, 
+            variant: selectedVariant || undefined
+          } 
+        })
+      }
     }
   }
 
@@ -113,22 +115,34 @@ const ProductDetail: React.FC = () => {
     ? product.images 
     : [{ image_url: product.image_url, alt_text: product.name }]
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center text-gold-600 hover:text-gold-700 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </button>
+  const reviews = [
+    { id: 1, name: 'Sarah K.', rating: 5, comment: 'Excellent quality! Fits perfectly and the material is amazing.', verified: true, days: 2 },
+    { id: 2, name: 'Fatima R.', rating: 5, comment: 'Beautiful design and fast delivery. Highly recommended!', verified: true, days: 5 },
+    { id: 3, name: 'Ayesha M.', rating: 4, comment: 'Good product, exactly as described. Will order again.', verified: true, days: 8 }
+  ]
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  const averageRating = 4.8
+  const totalReviews = 47
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+          <button
+            onClick={() => navigate('/products')}
+            className="hover:text-gold-600 transition-colors"
+          >
+            Products
+          </button>
+          <span>/</span>
+          <span className="text-gray-900">{product.name}</span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-white rounded-lg overflow-hidden">
+            <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden">
               <img
                 src={images[selectedImageIndex]?.image_url}
                 alt={images[selectedImageIndex]?.alt_text || product.name}
@@ -137,13 +151,13 @@ const ProductDetail: React.FC = () => {
             </div>
             
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="flex space-x-3">
                 {images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`aspect-square bg-white rounded-lg overflow-hidden border-2 ${
-                      selectedImageIndex === index ? 'border-gold-600' : 'border-gray-200'
+                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedImageIndex === index ? 'border-gold-600' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <img
@@ -159,71 +173,61 @@ const ProductDetail: React.FC = () => {
 
           {/* Product Information */}
           <div className="space-y-6">
-            <div>
-              <div className="text-sm text-gold-600 font-medium uppercase tracking-wide mb-2">
-                {product.category} • {product.subcategory}
-                {product.brand && <span className="ml-2 text-gray-500">by {product.brand}</span>}
+            {/* Brand and Category */}
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">IS</span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
-              
-              <div className="flex items-center space-x-4 mb-4">
-                <span className="text-3xl font-bold text-gold-600">
-                  {formatPrice(selectedVariant?.price || product.base_price || 0)}
-                </span>
-                {product.is_featured && (
-                  <span className="bg-gold-100 text-gold-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Featured
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-gold-400 fill-current" />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600">(4.8) • 124 reviews</span>
-              </div>
+              <span className="text-sm font-medium text-gray-900">In Style BD</span>
+              <span className="text-sm text-gray-500">• {product.category}</span>
             </div>
 
-            <div className="prose prose-sm text-gray-600">
-              <p>{product.description}</p>
+            {/* Product Name */}
+            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+
+            {/* Rating */}
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star 
+                    key={i} 
+                    className={`w-4 h-4 ${i < Math.floor(averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                  />
+                ))}
+              </div>
+              <span className="text-sm font-medium text-gray-900">{averageRating}</span>
+              <span className="text-sm text-gray-500">({totalReviews} reviews)</span>
+            </div>
+
+            {/* Price */}
+            <div className="text-3xl font-bold text-gray-900">
+              {formatPrice(selectedVariant?.price || product.base_price || 0)}
             </div>
 
             {/* Variant Selection */}
             {product.variants && product.variants.length > 1 && (
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Select Variant:</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {product.variants.map(variant => (
-                    <button
-                      key={variant.id}
-                      onClick={() => setSelectedVariant(variant)}
-                      className={`p-3 border rounded-lg text-left transition-colors ${
-                        selectedVariant?.id === variant.id
-                          ? 'border-gold-600 bg-gold-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium">{variant.variant_name}</div>
-                          <div className="text-sm text-gray-600">
-                            {variant.size && `Size: ${variant.size}`}
-                            {variant.color && ` • Color: ${variant.color}`}
-                            {variant.material_variant && ` • Material: ${variant.material_variant}`}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-bold text-gold-600">{formatPrice(variant.price)}</div>
-                          <div className="text-sm text-gray-600">
-                            {variant.stock > 0 ? `${variant.stock} in stock` : 'Out of stock'}
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">
+                    {selectedVariant?.color && 'Color'} 
+                    {selectedVariant?.color && selectedVariant?.size && ' • '}
+                    {selectedVariant?.size && 'Size'}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.map(variant => (
+                      <button
+                        key={variant.id}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${
+                          selectedVariant?.id === variant.id
+                            ? 'border-gray-900 bg-gray-900 text-white'
+                            : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                        }`}
+                      >
+                        {variant.color && variant.size ? `${variant.color} • ${variant.size}` : variant.variant_name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -231,91 +235,174 @@ const ProductDetail: React.FC = () => {
             {/* Quantity and Add to Cart */}
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
-                <label className="font-medium text-gray-900">Quantity:</label>
+                <span className="text-sm font-medium text-gray-900">Quantity:</span>
                 <div className="flex items-center border border-gray-300 rounded-lg">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-2 hover:bg-gray-100"
+                    className="p-2 hover:bg-gray-50 transition-colors"
                   >
-                    -
+                    <Minus className="w-4 h-4" />
                   </button>
-                  <span className="px-4 py-2 border-x border-gray-300">{quantity}</span>
+                  <span className="px-4 py-2 border-x border-gray-300 min-w-[60px] text-center">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-2 hover:bg-gray-100"
+                    className="p-2 hover:bg-gray-50 transition-colors"
                   >
-                    +
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-500">
                   {selectedVariant?.stock || 0} available
                 </span>
               </div>
 
-              <div className="flex space-x-4">
+              <div className="flex space-x-3">
                 <button
                   onClick={handleAddToCart}
                   disabled={!selectedVariant || selectedVariant.stock === 0}
-                  className="flex-1 bg-gold-600 hover:bg-gold-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
+                  className="flex-1 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
                 >
                   <ShoppingBag className="w-5 h-5 mr-2" />
-                  Add to Cart
+                  Add to cart
                 </button>
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                   <Heart className="w-5 h-5" />
                 </button>
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  <Share2 className="w-5 h-5" />
-                </button>
               </div>
-            </div>
 
-            {/* Product Details */}
-            <div className="space-y-4 pt-6 border-t border-gray-200">
-              {product.material && (
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-900">Material:</span>
-                  <span className="text-gray-600">{product.material}</span>
-                </div>
-              )}
-              {product.care_instructions && (
-                <div>
-                  <span className="font-medium text-gray-900">Care Instructions:</span>
-                  <p className="text-gray-600 mt-1">{product.care_instructions}</p>
-                </div>
-              )}
-              {selectedVariant?.sku && (
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-900">SKU:</span>
-                  <span className="text-gray-600">{selectedVariant.sku}</span>
-                </div>
-              )}
+              <div className="flex items-center text-sm text-gray-600">
+                <Truck className="w-4 h-4 mr-2" />
+                Free delivery on orders over ৳2000
+              </div>
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200">
-              <div className="flex items-center space-x-3">
-                <Truck className="w-6 h-6 text-gold-600" />
-                <div>
-                  <div className="font-medium text-gray-900">Free Shipping</div>
-                  <div className="text-sm text-gray-600">On orders over ৳2000</div>
-                </div>
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
+              <div className="text-center">
+                <Truck className="w-6 h-6 text-gray-600 mx-auto mb-2" />
+                <div className="text-xs font-medium text-gray-900">Free Shipping</div>
+                <div className="text-xs text-gray-500">On orders over ৳2000</div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Shield className="w-6 h-6 text-gold-600" />
-                <div>
-                  <div className="font-medium text-gray-900">Secure Payment</div>
-                  <div className="text-sm text-gray-600">100% secure checkout</div>
-                </div>
+              <div className="text-center">
+                <Shield className="w-6 h-6 text-gray-600 mx-auto mb-2" />
+                <div className="text-xs font-medium text-gray-900">Secure Payment</div>
+                <div className="text-xs text-gray-500">100% secure checkout</div>
               </div>
-              <div className="flex items-center space-x-3">
-                <RotateCcw className="w-6 h-6 text-gold-600" />
-                <div>
-                  <div className="font-medium text-gray-900">Easy Returns</div>
-                  <div className="text-sm text-gray-600">7-day return policy</div>
-                </div>
+              <div className="text-center">
+                <RotateCcw className="w-6 h-6 text-gray-600 mx-auto mb-2" />
+                <div className="text-xs font-medium text-gray-900">Easy Returns</div>
+                <div className="text-xs text-gray-500">7-day return policy</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Tabs Section */}
+        <div className="mt-16">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8">
+              {(['details', 'reviews', 'discussion'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
+                    activeTab === tab
+                      ? 'border-gray-900 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          <div className="py-8">
+            {activeTab === 'details' && (
+              <div className="prose prose-gray max-w-none">
+                <p className="text-gray-600 leading-relaxed">{product.description}</p>
+                
+                {product.material && (
+                  <div className="mt-6">
+                    <h4 className="font-medium text-gray-900 mb-2">Material</h4>
+                    <p className="text-gray-600">{product.material}</p>
+                  </div>
+                )}
+                
+                {product.care_instructions && (
+                  <div className="mt-6">
+                    <h4 className="font-medium text-gray-900 mb-2">Care Instructions</h4>
+                    <p className="text-gray-600">{product.care_instructions}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="space-y-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`w-5 h-5 ${i < Math.floor(averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                        />
+                      ))}
+                    </div>
+                    <span className="text-2xl font-bold text-gray-900">{averageRating}</span>
+                  </div>
+                  <span className="text-sm text-gray-500">{totalReviews} reviews</span>
+                </div>
+
+                <div className="space-y-6">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border-b border-gray-200 pb-6">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              {review.name.charAt(0)}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">{review.name}</div>
+                            {review.verified && (
+                              <div className="text-xs text-green-600">Verified Purchase</div>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm text-gray-500">{review.days} days ago</span>
+                      </div>
+                      
+                      <div className="flex items-center mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                          />
+                        ))}
+                      </div>
+                      
+                      <p className="text-gray-600">{review.comment}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'discussion' && (
+              <div className="text-center py-12">
+                <div className="text-gray-400 mb-4">
+                  <Share2 className="w-12 h-12 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Start a Discussion</h3>
+                <p className="text-gray-600 mb-6">Ask questions about this product or share your experience.</p>
+                <button className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                  Start Discussion
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
