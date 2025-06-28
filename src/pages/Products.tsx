@@ -192,7 +192,7 @@ const Products: React.FC = () => {
         </div>
 
         <div className="flex gap-8">
-          {/* Filters Sidebar - Desktop Only */}
+          {/* Desktop Filter Sidebar - Only show when mobile filter is closed */}
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-8">
               <FilterSidebar
@@ -204,13 +204,15 @@ const Products: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Filter Sidebar */}
-          <FilterSidebar
-            filters={filters}
-            onFiltersChange={setFilters}
-            isOpen={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-          />
+          {/* Mobile Filter Sidebar - Only show when explicitly opened */}
+          {isFilterOpen && (
+            <FilterSidebar
+              filters={filters}
+              onFiltersChange={setFilters}
+              isOpen={isFilterOpen}
+              onClose={() => setIsFilterOpen(false)}
+            />
+          )}
 
           {/* Products Grid */}
           <div className="flex-1">
