@@ -585,7 +585,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Services Section with Glowing Effect Cards */}
+      {/* Services Section with TiltedCard Animation */}
       <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -619,28 +619,28 @@ const Home: React.FC = () => {
                   viewport={{ once: true }}
                   className="relative group"
                 >
-                  <div className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gold-100 overflow-hidden">
-                    <GlowingEffect
-                      disabled={false}
-                      proximity={100}
-                      spread={30}
-                      blur={2}
-                      className="absolute inset-0"
-                    />
-                    
+                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gold-100 overflow-hidden">
                     <div className="relative z-10">
                       <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <IconComponent className="w-8 h-8 text-white" />
                       </div>
                       
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                      <p className="text-gray-600 leading-relaxed mb-6">{service.description}</p>
                       
-                      <div className="mt-6 w-full h-32 rounded-lg overflow-hidden">
-                        <img
-                          src={service.image}
-                          alt={service.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      <div className="w-full h-32 rounded-lg overflow-hidden">
+                        <TiltedCard
+                          imageSrc={service.image}
+                          altText={service.title}
+                          captionText={service.title}
+                          containerHeight="128px"
+                          containerWidth="100%"
+                          imageHeight="128px"
+                          imageWidth="100%"
+                          scaleOnHover={1.05}
+                          rotateAmplitude={8}
+                          showTooltip={false}
+                          className="w-full h-full"
                         />
                       </div>
                     </div>
