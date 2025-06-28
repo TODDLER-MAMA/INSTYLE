@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Star, Heart, ShoppingBag, TrendingUp, Crown, Gem, Palette, Truck, Shield, RotateCcw } from 'lucide-react'
+import { ArrowRight, Star, Heart, ShoppingBag, TrendingUp, Crown, Gem, Palette, Truck, Shield, RotateCcw, Sparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Product } from '../types'
 import ProductCard from '../components/ProductCard'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
+import TextPressure from '../components/TextPressure'
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
@@ -136,6 +137,151 @@ const Home: React.FC = () => {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Text Pressure Section */}
+      <section className="relative py-32 overflow-hidden">
+        {/* Background with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gold-50/30"></div>
+        
+        {/* Decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-r from-gold-200/20 to-gold-300/10 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-gold-300/15 to-gold-400/20 rounded-full blur-3xl"></div>
+          
+          {/* Floating sparkles */}
+          <motion.div
+            animate={{ 
+              y: [0, -20, 0],
+              rotate: [0, 180, 360]
+            }}
+            transition={{ 
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute top-20 left-20"
+          >
+            <Sparkles className="w-6 h-6 text-gold-400/60" />
+          </motion.div>
+          
+          <motion.div
+            animate={{ 
+              y: [0, 15, 0],
+              rotate: [0, -180, -360]
+            }}
+            transition={{ 
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+            className="absolute bottom-32 right-32"
+          >
+            <Crown className="w-8 h-8 text-gold-500/40" />
+          </motion.div>
+          
+          <motion.div
+            animate={{ 
+              y: [0, -25, 0],
+              x: [0, 10, 0]
+            }}
+            transition={{ 
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4
+            }}
+            className="absolute top-1/2 right-20"
+          >
+            <Gem className="w-5 h-5 text-gold-600/50" />
+          </motion.div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block text-sm font-medium text-gold-600 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-100 rounded-full">
+                Experience Excellence
+              </span>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+                Where Style Meets Innovation
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Move your cursor over our brand name to experience the interactive magic that defines our commitment to exceptional design and user experience.
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Text Pressure Animation Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <div className="h-48 md:h-64 flex items-center justify-center">
+              <div className="w-full max-w-4xl">
+                <TextPressure
+                  text="IN STYLE BD"
+                  textColor="#D4AF37"
+                  minFontSize={32}
+                  width={true}
+                  weight={true}
+                  italic={true}
+                  flex={true}
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Description below animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mt-16"
+          >
+            <div className="max-w-2xl mx-auto">
+              <p className="text-gray-600 leading-relaxed mb-8">
+                Our interactive brand experience reflects our dedication to creating memorable moments. 
+                Just like our products, every detail is crafted with precision and care to deliver 
+                something truly extraordinary.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { number: '10K+', label: 'Happy Customers' },
+                  { number: '500+', label: 'Premium Products' },
+                  { number: '99%', label: 'Satisfaction Rate' }
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="text-center"
+                  >
+                    <div className="text-3xl font-bold bg-gradient-to-r from-gold-600 to-gold-700 bg-clip-text text-transparent mb-2">
+                      {stat.number}
+                    </div>
+                    <div className="text-sm text-gray-600 font-medium">
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
