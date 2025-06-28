@@ -71,8 +71,7 @@ const Home: React.FC = () => {
       href: '/products?category=apparel',
       count: '200+ items',
       icon: Crown,
-      gradient: 'from-gold-400 via-gold-500 to-gold-600',
-      bgGradient: 'from-gold-50 to-gold-100'
+      color: 'from-purple-500 to-pink-500'
     },
     {
       name: 'Jewelry',
@@ -81,8 +80,7 @@ const Home: React.FC = () => {
       href: '/products?category=jewelry',
       count: '150+ items',
       icon: Gem,
-      gradient: 'from-gold-500 via-gold-600 to-gold-700',
-      bgGradient: 'from-gold-100 to-gold-200'
+      color: 'from-blue-500 to-cyan-500'
     },
     {
       name: 'Beauty',
@@ -91,57 +89,60 @@ const Home: React.FC = () => {
       href: '/products?category=beauty',
       count: '100+ items',
       icon: Palette,
-      gradient: 'from-gold-600 via-gold-700 to-gold-800',
-      bgGradient: 'from-gold-200 to-gold-300'
+      color: 'from-green-500 to-emerald-500'
     }
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100 relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-gold-200/40 to-gold-300/40 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
-        <div className="absolute top-40 right-10 w-[500px] h-[500px] bg-gradient-to-r from-gold-300/30 to-gold-400/30 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-gold-100/20 to-gold-200/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
-        
-        {/* Additional decorative elements */}
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-r from-gold-400/20 to-gold-500/20 rounded-full filter blur-2xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-gradient-to-r from-gold-500/15 to-gold-600/15 rounded-full filter blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
+      <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
+        {/* Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-orange-200/30 to-red-200/30 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+          <div className="absolute top-40 right-10 w-[500px] h-[500px] bg-gradient-to-r from-blue-200/20 to-purple-200/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-green-200/15 to-yellow-200/15 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-32 lg:py-48">
           <div className="text-center">
             {/* Enhanced Logo */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.5, rotateY: -180 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="flex justify-center mb-12"
+              className="flex justify-center mb-16"
             >
               <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-r from-gold-500 via-gold-600 to-gold-700 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/50 backdrop-blur-sm">
-                  <span className="text-white font-bold text-3xl">IS</span>
+                <div className="w-32 h-32 bg-gradient-to-br from-gray-900 to-gray-700 rounded-3xl flex items-center justify-center shadow-2xl border-4 border-white">
+                  <span className="text-white font-bold text-4xl">IS</span>
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-gold-400 to-gold-500 rounded-full animate-pulse shadow-lg"></div>
-                <div className="absolute -bottom-1 -left-1 w-6 h-6 bg-gradient-to-r from-gold-300 to-gold-400 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '1s' }}></div>
-                <div className="absolute top-1/2 -right-4 w-4 h-4 bg-gradient-to-r from-gold-200 to-gold-300 rounded-full animate-pulse shadow-lg" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl animate-pulse shadow-lg"></div>
+                <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl animate-pulse shadow-lg" style={{ animationDelay: '1s' }}></div>
+                <div className="absolute top-1/2 -right-6 w-6 h-6 bg-gradient-to-r from-green-400 to-yellow-500 rounded-2xl animate-pulse shadow-lg" style={{ animationDelay: '2s' }}></div>
               </div>
             </motion.div>
             
             {/* Enhanced Main Heading */}
-            <motion.h1 
+            <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="text-6xl md:text-8xl font-bold text-gray-900 mb-8 leading-tight"
+              className="mb-12"
             >
-              Where Elegance
-              <span className="block bg-gradient-to-r from-gold-500 via-gold-600 to-gold-700 bg-clip-text text-transparent">
-                Meets Perfection
-              </span>
-            </motion.h1>
+              <h1 className="text-7xl md:text-9xl font-black text-gray-900 mb-6 leading-none tracking-tight">
+                Style
+              </h1>
+              <div className="flex items-center justify-center space-x-6 mb-6">
+                <span className="text-4xl md:text-6xl font-light text-gray-500">that helps</span>
+                <div className="w-16 h-16 bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h2 className="text-7xl md:text-9xl font-black text-gray-900 leading-none tracking-tight">
+                you <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">shine</span>
+              </h2>
+            </motion.div>
             
             {/* Enhanced Subtitle */}
             <motion.p 
@@ -158,84 +159,40 @@ const Home: React.FC = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.7 }}
-              className="flex flex-col sm:flex-row gap-8 justify-center mb-16"
+              className="flex flex-col sm:flex-row gap-6 justify-center mb-20"
             >
               <Link to="/products">
-                <Button size="lg" className="group text-lg px-10 py-5 shadow-2xl hover:shadow-3xl">
-                  Explore Collection
-                  <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
+                <Button size="lg" className="text-xl px-12 py-6 shadow-2xl">
+                  Start for free
+                  <ArrowRight className="ml-3 w-6 h-6" />
                 </Button>
               </Link>
               
               <Link to="/about">
-                <Button variant="outline" size="lg" className="text-lg px-10 py-5 bg-white/80 backdrop-blur-sm border-2 border-gold-300 hover:bg-gold-50">
-                  Our Story
+                <Button variant="outline" size="lg" className="text-xl px-12 py-6 bg-white/80 backdrop-blur-sm">
+                  Request a demo
                 </Button>
               </Link>
             </motion.div>
 
-            {/* Enhanced Floating Elements */}
+            {/* Stats or Features */}
             <motion.div
-              animate={{ 
-                y: [0, -15, 0],
-                rotate: [0, 8, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{ 
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="absolute top-32 left-20 hidden lg:block"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.9 }}
+              className="text-center text-gray-500"
             >
-              <div className="p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gold-200">
-                <Sparkles className="w-10 h-10 text-gold-500" />
-              </div>
-            </motion.div>
-
-            <motion.div
-              animate={{ 
-                y: [0, 20, 0],
-                rotate: [0, -8, 0],
-                scale: [1, 1.15, 1]
-              }}
-              transition={{ 
-                duration: 10,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 2
-              }}
-              className="absolute top-40 right-32 hidden lg:block"
-            >
-              <div className="p-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gold-200">
-                <Crown className="w-12 h-12 text-gold-600" />
-              </div>
-            </motion.div>
-
-            <motion.div
-              animate={{ 
-                y: [0, -10, 0],
-                rotate: [0, 5, 0]
-              }}
-              transition={{ 
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 4
-              }}
-              className="absolute bottom-32 left-32 hidden lg:block"
-            >
-              <div className="p-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gold-200">
-                <Gem className="w-8 h-8 text-gold-500" />
-              </div>
+              <p className="text-lg">
+                Turn information into advantage! Start using In Style BD today. Sign up for a free trial.
+              </p>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Enhanced Categories Section */}
-      <section className="py-24 lg:py-40 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -243,82 +200,68 @@ const Home: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <div className="inline-flex items-center justify-center mb-8">
-              <div className="p-3 bg-gradient-to-r from-gold-500 to-gold-600 rounded-2xl shadow-xl mr-4">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gold-600 uppercase tracking-wider">Premium Collections</span>
-            </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-              Shop by Category
+            <h2 className="text-6xl md:text-7xl font-black text-gray-900 mb-8">
+              Maximize <span className="text-gray-400">efficiency</span>
             </h2>
-            <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Explore our carefully curated collections designed to enhance your natural beauty and express your unique style.
-            </p>
+            <h3 className="text-6xl md:text-7xl font-black text-gray-900 mb-12">
+              with our intuitive
+            </h3>
+            <div className="inline-flex items-center bg-gradient-to-r from-orange-400 to-red-500 text-white px-12 py-6 rounded-3xl text-3xl font-bold shadow-2xl">
+              collection set
+            </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-20">
             {categories.map((category, index) => {
               const IconComponent = category.icon
               return (
                 <motion.div
                   key={category.name}
-                  initial={{ opacity: 0, y: 50, rotateY: -15 }}
-                  whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -10, rotateY: 5 }}
                   className="group"
                 >
                   <Link to={category.href}>
-                    <div className="relative overflow-hidden h-[600px] rounded-3xl shadow-2xl border border-gold-200 bg-white/80 backdrop-blur-sm hover:shadow-3xl transition-all duration-700">
-                      {/* Background Image with Enhanced Overlay */}
+                    <Card variant="glass" className="h-[500px] relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                      {/* Background Image */}
                       <div className="absolute inset-0">
                         <img
                           src={category.image}
                           alt={category.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                         />
-                        <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent group-hover:from-black/95 transition-all duration-700`}></div>
-                        <div className={`absolute inset-0 bg-gradient-to-br ${category.bgGradient} opacity-20 group-hover:opacity-30 transition-opacity duration-700`}></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                       </div>
 
-                      {/* Enhanced Content */}
+                      {/* Content */}
                       <div className="relative h-full flex flex-col justify-between p-10 text-white">
                         {/* Top Section */}
                         <div className="flex items-center justify-between">
-                          <div className={`w-16 h-16 bg-gradient-to-r ${category.gradient} rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
+                          <div className={`w-16 h-16 bg-gradient-to-r ${category.color} rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
                             <IconComponent className="w-8 h-8 text-white" />
                           </div>
-                          <div className="text-right">
-                            <span className="text-sm font-bold bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
-                              {category.count}
-                            </span>
-                          </div>
+                          <span className="text-sm font-bold bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+                            {category.count}
+                          </span>
                         </div>
 
                         {/* Bottom Section */}
                         <div className="space-y-6">
-                          <div>
-                            <h3 className="text-4xl font-bold mb-4 group-hover:text-gold-300 transition-colors duration-500">
-                              {category.name}
-                            </h3>
-                            <p className="text-gray-200 text-lg leading-relaxed mb-6">
-                              {category.description}
-                            </p>
-                          </div>
-                          
-                          <div className="inline-flex items-center text-lg font-semibold group-hover:translate-x-3 transition-transform duration-500 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
+                          <h3 className="text-4xl font-bold group-hover:text-orange-300 transition-colors duration-500">
+                            {category.name}
+                          </h3>
+                          <p className="text-gray-200 text-lg leading-relaxed">
+                            {category.description}
+                          </p>
+                          <div className="inline-flex items-center text-lg font-semibold group-hover:translate-x-3 transition-transform duration-500 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-2xl border border-white/20">
                             Explore Collection 
-                            <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                            <ArrowRight className="ml-3 w-5 h-5" />
                           </div>
                         </div>
                       </div>
-
-                      {/* Decorative Elements */}
-                      <div className="absolute top-6 right-6 w-3 h-3 bg-gold-400 rounded-full animate-pulse opacity-80"></div>
-                      <div className="absolute bottom-6 left-6 w-2 h-2 bg-gold-300 rounded-full animate-pulse opacity-60" style={{ animationDelay: '1s' }}></div>
-                    </div>
+                    </Card>
                   </Link>
                 </motion.div>
               )
@@ -328,14 +271,8 @@ const Home: React.FC = () => {
       </section>
 
       {/* Enhanced Featured Products */}
-      <section className="py-24 lg:py-40 bg-gradient-to-r from-gold-50 via-white to-gold-100 relative">
-        {/* Section Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-gold-200/30 to-gold-300/30 rounded-full filter blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-gold-300/20 to-gold-400/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-32 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -344,13 +281,13 @@ const Home: React.FC = () => {
             className="text-center mb-20"
           >
             <div className="flex items-center justify-center mb-8">
-              <div className="p-3 bg-gradient-to-r from-gold-500 to-gold-600 rounded-2xl shadow-xl mr-4">
-                <TrendingUp className="w-8 h-8 text-white" />
+              <div className="p-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl shadow-xl mr-6">
+                <TrendingUp className="w-10 h-10 text-white" />
               </div>
-              <span className="text-xl font-bold text-gold-600 uppercase tracking-wider">Featured Collection</span>
+              <span className="text-2xl font-bold text-gray-600 uppercase tracking-wider">Featured Collection</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-              Trending Masterpieces
+            <h2 className="text-6xl md:text-7xl font-black text-gray-900 mb-8">
+              Trending Products
             </h2>
             <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Handpicked items that represent the finest in fashion, jewelry, and beauty craftsmanship.
@@ -365,18 +302,19 @@ const Home: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gold-200 overflow-hidden"
                 >
-                  <div className="aspect-square bg-gradient-to-br from-gold-100 to-gold-200 animate-pulse"></div>
-                  <div className="p-8">
-                    <div className="h-4 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl mb-4 animate-pulse"></div>
-                    <div className="h-6 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl mb-4 animate-pulse"></div>
-                    <div className="h-4 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl mb-6 animate-pulse"></div>
-                    <div className="flex justify-between items-center">
-                      <div className="h-6 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl w-24 animate-pulse"></div>
-                      <div className="h-10 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl w-28 animate-pulse"></div>
+                  <Card variant="glass" className="overflow-hidden">
+                    <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse"></div>
+                    <div className="p-8">
+                      <div className="h-4 bg-gray-200 rounded-xl mb-4 animate-pulse"></div>
+                      <div className="h-6 bg-gray-200 rounded-xl mb-4 animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded-xl mb-6 animate-pulse"></div>
+                      <div className="flex justify-between items-center">
+                        <div className="h-6 bg-gray-200 rounded-xl w-24 animate-pulse"></div>
+                        <div className="h-10 bg-gray-200 rounded-xl w-28 animate-pulse"></div>
+                      </div>
                     </div>
-                  </div>
+                  </Card>
                 </motion.div>
               ))}
             </div>
@@ -404,8 +342,8 @@ const Home: React.FC = () => {
             className="text-center mt-16"
           >
             <Link to="/products">
-              <Button size="lg" className="text-lg px-10 py-5 shadow-2xl hover:shadow-3xl">
-                View All Masterpieces
+              <Button size="lg" className="text-xl px-12 py-6 shadow-2xl">
+                View All Products
                 <ArrowRight className="ml-3 w-6 h-6" />
               </Button>
             </Link>
@@ -413,59 +351,40 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Enhanced Features Section */}
-      <section className="py-24 lg:py-40 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-            {[
-              {
-                icon: Heart,
-                title: "Curated with Love",
-                description: "Every item is carefully selected to ensure the highest quality and style for our discerning customers.",
-                gradient: "from-red-400 via-red-500 to-pink-500",
-                bgGradient: "from-red-50 to-pink-50"
-              },
-              {
-                icon: Zap,
-                title: "Lightning Fast Delivery",
-                description: "Quick and reliable delivery across Bangladesh with careful packaging and real-time tracking.",
-                gradient: "from-blue-400 via-blue-500 to-indigo-500",
-                bgGradient: "from-blue-50 to-indigo-50"
-              },
-              {
-                icon: Gift,
-                title: "Premium Quality",
-                description: "Only the finest materials and craftsmanship for lasting beauty and complete satisfaction.",
-                gradient: "from-gold-400 via-gold-500 to-gold-600",
-                bgGradient: "from-gold-50 to-gold-100"
-              }
-            ].map((feature, index) => {
-              const IconComponent = feature.icon
-              return (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 50, rotateX: -15 }}
-                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10, scale: 1.05 }}
-                  className="group text-center"
-                >
-                  <div className={`p-10 rounded-3xl shadow-2xl border border-gold-200 bg-gradient-to-br ${feature.bgGradient} hover:shadow-3xl transition-all duration-700 h-full`}>
-                    <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r ${feature.gradient} rounded-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-xl`}>
-                      <IconComponent className="w-10 h-10 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6 group-hover:text-gold-700 transition-colors duration-500">
-                      {feature.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed text-lg">
-                      {feature.description}
-                    </p>
-                  </div>
-                </motion.div>
-              )
-            })}
-          </div>
+      {/* Get Started Section */}
+      <section className="py-32 bg-white">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+          >
+            <div className="mb-12">
+              <div className="w-24 h-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
+                <Gift className="w-12 h-12 text-white" />
+              </div>
+              <h2 className="text-6xl md:text-7xl font-black text-gray-900 mb-8">
+                Get Started
+              </h2>
+              <p className="text-2xl text-gray-600 mb-12 leading-relaxed">
+                Turn information into advantage! Start using In Style BD today. Sign up for a free trial.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Link to="/products">
+                <Button size="lg" className="text-xl px-12 py-6 shadow-2xl">
+                  Start for free
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="outline" size="lg" className="text-xl px-12 py-6 bg-white">
+                  Request a demo
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>
