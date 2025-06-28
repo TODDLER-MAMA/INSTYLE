@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           if (isAdmin) {
             dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user, isAdmin } })
           } else {
-            // If user is not admin, sign them out
+            // If user is not admin, sign them out immediately
             await supabase.auth.signOut()
             dispatch({ type: 'SET_UNAUTHENTICATED' })
           }
@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (isAdmin) {
           dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user, isAdmin } })
         } else {
-          // If user is not admin, sign them out
+          // If user is not admin, sign them out immediately
           await supabase.auth.signOut()
           dispatch({ type: 'SET_UNAUTHENTICATED' })
         }
@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           dispatch({ type: 'SET_AUTHENTICATED', payload: { user: data.user, isAdmin } })
           return { success: true }
         } else {
-          // Sign out non-admin users
+          // Sign out non-admin users immediately
           await supabase.auth.signOut()
           dispatch({ type: 'SET_UNAUTHENTICATED' })
           return { success: false, error: 'Access denied. Only authorized admin can login.' }
