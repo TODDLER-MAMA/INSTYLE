@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Package, ShoppingCart, Users, TrendingUp, Edit, Trash2, LogOut, Eye, EyeOff } from 'lucide-react'
+import { Plus, Package, ShoppingCart, Users, TrendingUp, Edit, Trash2, LogOut, Eye, EyeOff, Crown, Gem, Star, Calendar, DollarSign, BarChart3, Filter, Search, Download, Upload, Settings, Bell, User } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { Product, Order } from '../types'
+import ProductForm from '../components/ProductForm'
 
 const Admin: React.FC = () => {
   const { logout } = useAuth()
@@ -14,16 +16,7 @@ const Admin: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [orderFilter, setOrderFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
-
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    category: 'apparel' as 'apparel' | 'jewelry' | 'beauty',
-    subcategory: '',
-    price: 0,
-    image_url: '',
-    description: '',
-    stock: 0
-  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -48,42 +41,71 @@ const Admin: React.FC = () => {
     }
   }
 
-  const handleAddProduct = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleProductSubmit = async (productData: any) => {
+    setIsSubmitting(true)
     try {
-      const { error } = await supabase
-        .from('products')
-        .insert([{ ...newProduct, updated_at: new Date().toISOString() }])
+      if (editingProduct) {
+        // Update existing product
+        const { error } = await supabase
+          .from('products')
+          .update({
+            name: productData.name,
+            category: productData.category,
+            subcategory: productData.subcategory,
+            base_price: productData.base_price,
+            description: productData.description,
+            brand: productData.brand,
+            material: productData.material,
+            care_instructions: productData.care_instructions,
+            is_featured: productData.is_featured,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editingProduct.id)
 
-      if (error) throw error
+        if (error) throw error
+      } else {
+        // Create new product
+        const { data: newProduct, error: productError } = await supabase
+          .from('products')
+          .insert([{
+            name: productData.name,
+            category: productData.category,
+            subcategory: productData.subcategory,
+            base_price: productData.base_price,
+            description: productData.description,
+            brand: productData.brand,
+            material: productData.material,
+            care_instructions: productData.care_instructions,
+            is_featured: productData.is_featured
+          }])
+          .select()
+          .single()
 
-      resetProductForm()
+        if (productError) throw productError
+
+        // Insert variants
+        if (productData.variants && productData.variants.length > 0) {
+          const variantsToInsert = productData.variants.map((variant: any) => ({
+            ...variant,
+            product_id: newProduct.id
+          }))
+
+          const { error: variantsError } = await supabase
+            .from('product_variants')
+            .insert(variantsToInsert)
+
+          if (variantsError) throw variantsError
+        }
+      }
+
       setShowAddProduct(false)
-      fetchData()
-    } catch (error) {
-      console.error('Error adding product:', error)
-      alert('Error adding product. Please try again.')
-    }
-  }
-
-  const handleEditProduct = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!editingProduct) return
-
-    try {
-      const { error } = await supabase
-        .from('products')
-        .update({ ...newProduct, updated_at: new Date().toISOString() })
-        .eq('id', editingProduct.id)
-
-      if (error) throw error
-
-      resetProductForm()
       setEditingProduct(null)
       fetchData()
     } catch (error) {
-      console.error('Error updating product:', error)
-      alert('Error updating product. Please try again.')
+      console.error('Error saving product:', error)
+      alert('Error saving product. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -102,31 +124,6 @@ const Admin: React.FC = () => {
       console.error('Error deleting product:', error)
       alert('Error deleting product. Please try again.')
     }
-  }
-
-  const startEditProduct = (product: Product) => {
-    setNewProduct({
-      name: product.name,
-      category: product.category,
-      subcategory: product.subcategory,
-      price: product.price,
-      image_url: product.image_url,
-      description: product.description,
-      stock: product.stock
-    })
-    setEditingProduct(product)
-  }
-
-  const resetProductForm = () => {
-    setNewProduct({
-      name: '',
-      category: 'apparel',
-      subcategory: '',
-      price: 0,
-      image_url: '',
-      description: '',
-      stock: 0
-    })
   }
 
   const updateOrderStatus = async (orderId: string, status: string) => {
@@ -165,104 +162,177 @@ const Admin: React.FC = () => {
   const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0)
   const totalProducts = products.length
   const totalOrders = orders.length
-  const lowStockProducts = products.filter(p => p.stock < 10).length
+  const lowStockProducts = products.filter(p => (p.stock || 0) < 10).length
+
+  const stats = [
+    {
+      title: 'Total Revenue',
+      value: formatPrice(totalRevenue),
+      change: '+12.5%',
+      icon: DollarSign,
+      color: 'from-gold-500 to-gold-600',
+      bgColor: 'bg-gold-50',
+      textColor: 'text-gold-600'
+    },
+    {
+      title: 'Total Orders',
+      value: totalOrders.toString(),
+      change: '+8.2%',
+      icon: ShoppingCart,
+      color: 'from-blue-500 to-blue-600',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600'
+    },
+    {
+      title: 'Products',
+      value: totalProducts.toString(),
+      change: '+3.1%',
+      icon: Package,
+      color: 'from-green-500 to-green-600',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-600'
+    },
+    {
+      title: 'Low Stock',
+      value: lowStockProducts.toString(),
+      change: '-2.4%',
+      icon: TrendingUp,
+      color: 'from-red-500 to-red-600',
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-600'
+    }
+  ]
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-gold-200 border-t-gold-600 rounded-full"
+        />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-gray-900 mb-4">
-              Admin Dashboard
-            </h1>
-            
-            <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-sm">
-              {(['dashboard', 'products', 'orders'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-2 rounded-md font-medium capitalize transition-colors duration-300 ${
-                    activeTab === tab
-                      ? 'bg-gold-600 text-white'
-                      : 'text-gray-600 hover:text-gold-600'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gold-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo and Title */}
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Crown className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+                <p className="text-sm text-gray-600">In Style BD Management</p>
+              </div>
+            </div>
+
+            {/* Header Actions */}
+            <div className="flex items-center space-x-4">
+              <button className="p-2 text-gray-600 hover:text-gold-600 transition-colors">
+                <Bell className="w-5 h-5" />
+              </button>
+              <button className="p-2 text-gray-600 hover:text-gold-600 transition-colors">
+                <Settings className="w-5 h-5" />
+              </button>
+              <div className="w-8 h-8 bg-gradient-to-r from-gold-400 to-gold-500 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
+              </div>
+              <button
+                onClick={logout}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          <button
-            onClick={logout}
-            className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-300"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </button>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navigation Tabs */}
+        <div className="mb-8">
+          <div className="flex space-x-1 bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-lg border border-gold-200">
+            {(['dashboard', 'products', 'orders'] as const).map((tab) => (
+              <motion.button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`px-6 py-3 rounded-lg font-medium capitalize transition-all duration-300 relative ${
+                  activeTab === tab
+                    ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gold-600 hover:bg-gold-50'
+                }`}
+              >
+                {tab}
+                {activeTab === tab && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-gradient-to-r from-gold-500 to-gold-600 rounded-lg -z-10"
+                  />
+                )}
+              </motion.button>
+            ))}
+          </div>
         </div>
 
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Revenue</p>
-                    <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue)}</p>
-                  </div>
-                  <TrendingUp className="w-8 h-8 text-green-500" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Products</p>
-                    <p className="text-2xl font-bold text-gray-900">{totalProducts}</p>
-                  </div>
-                  <Package className="w-8 h-8 text-blue-500" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Total Orders</p>
-                    <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
-                  </div>
-                  <ShoppingCart className="w-8 h-8 text-gold-500" />
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Low Stock Items</p>
-                    <p className="text-2xl font-bold text-gray-900">{lowStockProducts}</p>
-                  </div>
-                  <Users className="w-8 h-8 text-red-500" />
-                </div>
-              </div>
+              {stats.map((stat, index) => {
+                const IconComponent = stat.icon
+                return (
+                  <motion.div
+                    key={stat.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gold-200 p-6 hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
+                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                        <p className={`text-sm ${stat.textColor} font-medium`}>{stat.change}</p>
+                      </div>
+                      <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
+                        <IconComponent className={`w-6 h-6 ${stat.textColor}`} />
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
             </div>
 
             {/* Recent Orders */}
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gold-200 overflow-hidden"
+            >
+              <div className="px-6 py-4 border-b border-gold-200 bg-gradient-to-r from-gold-50 to-gold-100">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2 text-gold-600" />
+                    Recent Orders
+                  </h2>
+                  <button className="text-gold-600 hover:text-gold-700 text-sm font-medium">
+                    View All
+                  </button>
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gold-50/50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Customer
@@ -278,20 +348,20 @@ const Admin: React.FC = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gold-100">
                     {orders.slice(0, 5).map((order) => (
-                      <tr key={order.id}>
+                      <tr key={order.id} className="hover:bg-gold-50/30 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900">{order.customer_name}</div>
                             <div className="text-sm text-gray-500">{order.customer_email}</div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {formatPrice(order.total_amount)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                             order.status === 'delivered' ? 'bg-green-100 text-green-800' :
                             order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
                             order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
@@ -308,127 +378,63 @@ const Admin: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
 
         {activeTab === 'products' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Products</h2>
-              <button
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <Package className="w-6 h-6 mr-2 text-gold-600" />
+                Products Management
+              </h2>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setShowAddProduct(true)}
-                className="inline-flex items-center px-4 py-2 bg-gold-600 hover:bg-gold-700 text-white font-medium rounded-lg transition-colors duration-300"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-5 h-5 mr-2" />
                 Add Product
-              </button>
+              </motion.button>
             </div>
 
-            {/* Product Modal */}
+            {/* Product Form Modal */}
             {(showAddProduct || editingProduct) && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-                  <h3 className="text-lg font-semibold mb-4">
-                    {editingProduct ? 'Edit Product' : 'Add New Product'}
-                  </h3>
-                  <form onSubmit={editingProduct ? handleEditProduct : handleAddProduct} className="space-y-4">
-                    <input
-                      type="text"
-                      placeholder="Product Name"
-                      value={newProduct.name}
-                      onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                      required
-                    />
-                    
-                    <select
-                      value={newProduct.category}
-                      onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                    >
-                      <option value="apparel">Apparel</option>
-                      <option value="jewelry">Jewelry</option>
-                      <option value="beauty">Beauty</option>
-                    </select>
-
-                    <input
-                      type="text"
-                      placeholder="Subcategory"
-                      value={newProduct.subcategory}
-                      onChange={(e) => setNewProduct({ ...newProduct, subcategory: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                      required
-                    />
-
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      value={newProduct.price}
-                      onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                      required
-                      min="0"
-                      step="0.01"
-                    />
-
-                    <input
-                      type="url"
-                      placeholder="Image URL"
-                      value={newProduct.image_url}
-                      onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                      required
-                    />
-
-                    <textarea
-                      placeholder="Description"
-                      value={newProduct.description}
-                      onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                      rows={3}
-                      required
-                    />
-
-                    <input
-                      type="number"
-                      placeholder="Stock"
-                      value={newProduct.stock}
-                      onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                      required
-                      min="0"
-                    />
-
-                    <div className="flex space-x-3">
-                      <button
-                        type="submit"
-                        className="flex-1 bg-gold-600 hover:bg-gold-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300"
-                      >
-                        {editingProduct ? 'Update Product' : 'Add Product'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowAddProduct(false)
-                          setEditingProduct(null)
-                          resetProductForm()
-                        }}
-                        className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-300"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+              <ProductForm
+                product={editingProduct}
+                onSubmit={handleProductSubmit}
+                onClose={() => {
+                  setShowAddProduct(false)
+                  setEditingProduct(null)
+                }}
+                isLoading={isSubmitting}
+              />
             )}
 
             {/* Products Table */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gold-200 overflow-hidden"
+            >
+              <div className="px-6 py-4 border-b border-gold-200 bg-gradient-to-r from-gold-50 to-gold-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">All Products</h3>
+                  <div className="flex items-center space-x-2">
+                    <button className="p-2 text-gray-600 hover:text-gold-600 transition-colors">
+                      <Download className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 text-gray-600 hover:text-gold-600 transition-colors">
+                      <Upload className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gold-50/50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Product
@@ -440,56 +446,67 @@ const Admin: React.FC = () => {
                         Price
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Stock
+                        Status
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gold-100">
                     {products.map((product) => (
-                      <tr key={product.id}>
+                      <tr key={product.id} className="hover:bg-gold-50/30 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <img
-                              className="h-10 w-10 rounded-lg object-cover"
-                              src={product.image_url}
-                              alt={product.name}
-                            />
+                            <div className="w-12 h-12 bg-gradient-to-br from-gold-100 to-gold-200 rounded-lg flex items-center justify-center">
+                              <Gem className="w-6 h-6 text-gold-600" />
+                            </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                              <div className="text-sm text-gray-500">{product.brand}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{product.category}</div>
-                          <div className="text-sm text-gray-500">{product.subcategory}</div>
+                          <div className="text-sm text-gray-900 capitalize">{product.category}</div>
+                          <div className="text-sm text-gray-500 capitalize">{product.subcategory}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatPrice(product.price)}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {formatPrice(product.base_price)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                            product.status === 'active' ? 'bg-green-100 text-green-800' :
+                            product.status === 'inactive' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
                           }`}>
-                            {product.stock} in stock
+                            {product.status}
                           </span>
+                          {product.is_featured && (
+                            <span className="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gold-100 text-gold-800">
+                              <Star className="w-3 h-3 mr-1" />
+                              Featured
+                            </span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
-                            <button 
-                              onClick={() => startEditProduct(product)}
-                              className="text-indigo-600 hover:text-indigo-900"
+                            <motion.button 
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => setEditingProduct(product)}
+                              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all"
                             >
                               <Edit className="w-4 h-4" />
-                            </button>
-                            <button 
+                            </motion.button>
+                            <motion.button 
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
                               onClick={() => handleDeleteProduct(product.id)}
-                              className="text-red-600 hover:text-red-900"
+                              className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </motion.button>
                           </div>
                         </td>
                       </tr>
@@ -497,28 +514,34 @@ const Admin: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
 
         {activeTab === 'orders' && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Orders</h2>
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <ShoppingCart className="w-6 h-6 mr-2 text-gold-600" />
+                Orders Management
+              </h2>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <input
-                  type="text"
-                  placeholder="Search orders..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
-                />
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Search orders..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gold-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
+                  />
+                </div>
                 
                 <select
                   value={orderFilter}
                   onChange={(e) => setOrderFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500"
+                  className="px-4 py-2 border border-gold-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
                 >
                   <option value="all">All Orders</option>
                   <option value="pending">Pending</option>
@@ -530,10 +553,17 @@ const Admin: React.FC = () => {
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gold-200 overflow-hidden"
+            >
+              <div className="px-6 py-4 border-b border-gold-200 bg-gradient-to-r from-gold-50 to-gold-100">
+                <h3 className="text-lg font-semibold text-gray-900">Order History</h3>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gold-50/50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Order ID
@@ -555,11 +585,11 @@ const Admin: React.FC = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gold-100">
                     {filteredOrders.map((order) => (
-                      <tr key={order.id}>
+                      <tr key={order.id} className="hover:bg-gold-50/30 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
-                          {order.id.slice(0, 8)}...
+                          #{order.id.slice(0, 8).toUpperCase()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
@@ -571,14 +601,14 @@ const Admin: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {Array.isArray(order.items) ? order.items.length : 0} items
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {formatPrice(order.total_amount)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <select
                             value={order.status}
                             onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                            className={`text-sm rounded-full px-3 py-1 font-semibold border-0 ${
+                            className={`text-sm rounded-lg px-3 py-1 font-semibold border-0 focus:ring-2 focus:ring-gold-500 ${
                               order.status === 'delivered' ? 'bg-green-100 text-green-800' :
                               order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
                               order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
@@ -593,7 +623,8 @@ const Admin: React.FC = () => {
                             <option value="cancelled">Cancelled</option>
                           </select>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center">
+                          <Calendar className="w-4 h-4 mr-1" />
                           {new Date(order.created_at).toLocaleDateString()}
                         </td>
                       </tr>
@@ -603,11 +634,12 @@ const Admin: React.FC = () => {
               </div>
               
               {filteredOrders.length === 0 && (
-                <div className="text-center py-8">
+                <div className="text-center py-12">
+                  <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">No orders found matching your criteria.</p>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         )}
       </div>

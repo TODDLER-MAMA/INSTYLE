@@ -227,14 +227,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               )}
             </div>
             
-            <Button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleAddToCart}
               disabled={displayStock === 0}
-              size="sm"
-              className="text-xs px-3 py-1"
+              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
+                displayStock === 0 
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white shadow-md hover:shadow-lg'
+              }`}
             >
               {displayStock === 0 ? 'Out of Stock' : 'Add to Cart'}
-            </Button>
+            </motion.button>
           </div>
         </div>
       </div>
