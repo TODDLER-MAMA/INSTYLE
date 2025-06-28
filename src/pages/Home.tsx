@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Star, Heart, ShoppingBag, TrendingUp, Crown, Gem, Palette, Truck, Shield, RotateCcw, Sparkles } from 'lucide-react'
+import { ArrowRight, Star, Heart, ShoppingBag, TrendingUp, Crown, Gem, Palette, Truck, Shield, RotateCcw, Sparkles, Headphones, Award, Clock, Users, MapPin, Phone, Mail, CheckCircle, Zap, Gift } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Product } from '../types'
 import ProductCard from '../components/ProductCard'
@@ -10,6 +10,8 @@ import Card from '../components/ui/Card'
 import TextPressure from '../components/TextPressure'
 import ScrollReveal from '../components/ScrollReveal'
 import ScrollVelocity from '../components/ScrollVelocity'
+import { GlowingEffect } from '../components/ui/GlowingEffect'
+import TiltedCard from '../components/ui/TiltedCard'
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
@@ -93,12 +95,72 @@ const Home: React.FC = () => {
     }
   ]
 
-  // Brand names for the scroll velocity animation - Split into two lines each
-  const luxuryBrandsLine1 = ['CHANEL', 'DIOR', 'GUCCI', 'PRADA']
-  const luxuryBrandsLine2 = ['VERSACE', 'ARMANI', 'VALENTINO', 'BALENCIAGA']
+  // Brand names for the scroll velocity animation - Only 2 lines each
+  const luxuryBrandsLine1 = ['CHANEL', 'DIOR', 'GUCCI', 'PRADA', 'VERSACE', 'ARMANI']
+  const luxuryBrandsLine2 = ['VALENTINO', 'BALENCIAGA', 'HERMÈS', 'CARTIER', 'TIFFANY', 'BULGARI']
 
-  const fashionBrandsLine1 = ['ZARA', 'H&M', 'UNIQLO', 'MANGO']
-  const fashionBrandsLine2 = ['COS', 'MASSIMO DUTTI', 'BERSHKA', 'PULL&BEAR']
+  const fashionBrandsLine1 = ['ZARA', 'H&M', 'UNIQLO', 'MANGO', 'COS', 'MASSIMO DUTTI']
+  const fashionBrandsLine2 = ['BERSHKA', 'PULL&BEAR', 'STRADIVARIUS', 'FOREVER21', 'GAP', 'TOMMY']
+
+  const services = [
+    {
+      icon: Truck,
+      title: "Free Delivery",
+      description: "Complimentary delivery on orders over ৳2000 across Bangladesh",
+      image: "https://images.pexels.com/photos/4391470/pexels-photo-4391470.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      icon: Headphones,
+      title: "24/7 Support",
+      description: "Round-the-clock customer service for all your queries",
+      image: "https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      icon: Shield,
+      title: "Quality Guarantee",
+      description: "100% authentic products with quality assurance",
+      image: "https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      icon: RotateCcw,
+      title: "Easy Returns",
+      description: "Hassle-free 7-day return and exchange policy",
+      image: "https://images.pexels.com/photos/4482900/pexels-photo-4482900.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      icon: Award,
+      title: "Premium Quality",
+      description: "Carefully curated products from trusted brands",
+      image: "https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      icon: Gift,
+      title: "Gift Wrapping",
+      description: "Beautiful gift wrapping service for special occasions",
+      image: "https://images.pexels.com/photos/264985/pexels-photo-264985.jpeg?auto=compress&cs=tinysrgb&w=600"
+    }
+  ]
+
+  const facilities = [
+    {
+      title: "Personal Styling",
+      description: "Get personalized fashion advice from our expert stylists",
+      features: ["One-on-one consultation", "Style recommendations", "Wardrobe planning"],
+      image: "https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      title: "Custom Tailoring",
+      description: "Perfect fit guaranteed with our professional tailoring services",
+      features: ["Precise measurements", "Expert alterations", "Perfect fitting"],
+      image: "https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=600"
+    },
+    {
+      title: "VIP Membership",
+      description: "Exclusive benefits and early access to new collections",
+      features: ["Priority access", "Special discounts", "Exclusive events"],
+      image: "https://images.pexels.com/photos/5632402/pexels-photo-5632402.jpeg?auto=compress&cs=tinysrgb&w=600"
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100/50">
@@ -365,7 +427,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* First Horizontal Scroll - Premium Brands (Two Lines Only) */}
+      {/* First Horizontal Scroll - Premium Brands (Only 2 Lines) */}
       <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 overflow-hidden">
         <div className="mb-16 text-center">
           <motion.div
@@ -386,7 +448,7 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Two horizontal scroll lines */}
+        {/* Only two horizontal scroll lines */}
         <div className="space-y-8">
           <ScrollVelocity
             texts={luxuryBrandsLine1}
@@ -474,7 +536,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Second Horizontal Scroll - Contemporary Collections (Two Lines Only) */}
+      {/* Second Horizontal Scroll - Contemporary Collections (Only 2 Lines) */}
       <section className="py-20 bg-gradient-to-r from-gold-100 via-gold-200 to-gold-100 overflow-hidden">
         <div className="mb-16 text-center">
           <motion.div
@@ -495,7 +557,7 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Two horizontal scroll lines */}
+        {/* Only two horizontal scroll lines */}
         <div className="space-y-8">
           <ScrollVelocity
             texts={fashionBrandsLine1}
@@ -520,6 +582,219 @@ const Home: React.FC = () => {
               borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
             }}
           />
+        </div>
+      </section>
+
+      {/* Services Section with Glowing Effect Cards */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block text-sm font-medium text-gold-600 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-100 rounded-full">
+                Our Services
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+                Why Choose In Style BD
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                We provide exceptional services and facilities to ensure your shopping experience is nothing short of perfect.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => {
+              const IconComponent = service.icon
+              return (
+                <motion.div
+                  key={service.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="relative group"
+                >
+                  <div className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gold-100 overflow-hidden">
+                    <GlowingEffect
+                      disabled={false}
+                      proximity={100}
+                      spread={30}
+                      blur={2}
+                      className="absolute inset-0"
+                    />
+                    
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <IconComponent className="w-8 h-8 text-white" />
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
+                      <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                      
+                      <div className="mt-6 w-full h-32 rounded-lg overflow-hidden">
+                        <img
+                          src={service.image}
+                          alt={service.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Facilities Section with Tilted Cards */}
+      <section className="py-20 bg-gradient-to-br from-gold-50 to-gold-100/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block text-sm font-medium text-gold-600 uppercase tracking-wide mb-4 px-4 py-2 bg-white/50 rounded-full">
+                Premium Facilities
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+                Exclusive Services
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Experience our premium facilities designed to provide you with personalized and exceptional service.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {facilities.map((facility, index) => (
+              <motion.div
+                key={facility.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <div className="mb-8">
+                  <TiltedCard
+                    imageSrc={facility.image}
+                    altText={facility.title}
+                    captionText={facility.title}
+                    containerHeight="300px"
+                    containerWidth="100%"
+                    imageHeight="300px"
+                    imageWidth="100%"
+                    scaleOnHover={1.05}
+                    rotateAmplitude={8}
+                    showTooltip={false}
+                    className="mx-auto"
+                    displayOverlayContent={true}
+                    overlayContent={
+                      <div className="text-white text-center p-6">
+                        <h3 className="text-xl font-bold mb-2">{facility.title}</h3>
+                        <p className="text-sm opacity-90">{facility.description}</p>
+                      </div>
+                    }
+                  />
+                </div>
+                
+                <div className="bg-white rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{facility.title}</h3>
+                  <p className="text-gray-600 mb-6">{facility.description}</p>
+                  
+                  <ul className="space-y-3">
+                    {facility.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center text-sm text-gray-700">
+                        <CheckCircle className="w-4 h-4 text-gold-500 mr-3 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block text-sm font-medium text-gold-400 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-900/20 rounded-full">
+                Get in Touch
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                Visit Our Store
+              </h2>
+              <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+                Experience our products in person at our flagship store in Dhaka, or reach out to us for any inquiries.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: MapPin,
+                title: "Visit Us",
+                details: ["Dhanmondi, Dhaka", "Bangladesh", "Open 10 AM - 10 PM"]
+              },
+              {
+                icon: Phone,
+                title: "Call Us",
+                details: ["+880 1234 567890", "+880 9876 543210", "Available 24/7"]
+              },
+              {
+                icon: Mail,
+                title: "Email Us",
+                details: ["info@instylebd.com", "support@instylebd.com", "Quick response guaranteed"]
+              }
+            ].map((contact, index) => {
+              const IconComponent = contact.icon
+              return (
+                <motion.div
+                  key={contact.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="relative group"
+                >
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-gold-500/20 hover:border-gold-500/40 transition-all duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-4">{contact.title}</h3>
+                    
+                    <div className="space-y-2">
+                      {contact.details.map((detail, detailIndex) => (
+                        <p key={detailIndex} className="text-gray-300 text-sm">
+                          {detail}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
