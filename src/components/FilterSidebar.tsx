@@ -1,7 +1,6 @@
 import React from 'react'
 import { X } from 'lucide-react'
 import { FilterState } from '../types'
-import Card from './ui/Card'
 
 interface FilterSidebarProps {
   filters: FilterState
@@ -77,141 +76,121 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed lg:static lg:top-0 left-0 h-full lg:h-auto w-80 
-        transform transition-all duration-500 z-50 lg:z-auto
+        fixed lg:static lg:top-0 left-0 h-full lg:h-auto w-80 bg-white shadow-lg lg:shadow-none
+        transform transition-transform duration-300 z-50 lg:z-auto lg:rounded-2xl
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         overflow-y-auto
       `}>
-        <Card variant="glass" className="h-full lg:h-auto">
-          <div className="p-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-black text-gray-900">
-                Filters
-              </h2>
-              <div className="flex items-center space-x-3">
-                <button
-                  onClick={clearFilters}
-                  className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors duration-300 px-4 py-2 rounded-xl hover:bg-orange-50"
-                >
-                  Clear All
-                </button>
-                <button
-                  onClick={onClose}
-                  className="lg:hidden text-gray-500 hover:text-gray-700 transition-colors duration-300 p-2 rounded-xl hover:bg-gray-100"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-
-            {/* Price Range */}
-            <div className="mb-10">
-              <h3 className="font-bold text-gray-900 mb-6 text-xl">Price Range</h3>
-              <div className="space-y-4">
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="0"
-                    max="10000"
-                    value={filters.priceRange[1]}
-                    onChange={(e) => handlePriceChange(filters.priceRange[0], parseInt(e.target.value))}
-                    className="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer slider"
-                    style={{
-                      background: `linear-gradient(to right, #f97316 0%, #f97316 ${(filters.priceRange[1] / 10000) * 100}%, #e5e7eb ${(filters.priceRange[1] / 10000) * 100}%, #e5e7eb 100%)`
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 font-medium">৳0</span>
-                  <span className="font-bold text-orange-600 bg-orange-50 px-4 py-2 rounded-xl">
-                    ৳{filters.priceRange[1].toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Categories */}
-            <div className="space-y-6">
-              {Object.entries(categories).map(([categoryKey, categoryData]) => (
-                <div key={categoryKey} className="border-b border-gray-100 pb-6 last:border-b-0">
-                  <button
-                    onClick={() => handleCategoryChange(categoryKey)}
-                    className={`w-full text-left font-bold mb-4 transition-all duration-300 text-xl p-4 rounded-2xl ${
-                      filters.category === categoryKey 
-                        ? 'text-white bg-gradient-to-r from-orange-500 to-red-500 shadow-lg' 
-                        : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
-                    }`}
-                  >
-                    {categoryData.name}
-                  </button>
-                  
-                  {filters.category === categoryKey && (
-                    <div className="space-y-3 animate-slide-up pl-2">
-                      {categoryData.subcategories.map((subcategory) => (
-                        <label
-                          key={subcategory}
-                          className="flex items-center space-x-3 cursor-pointer group p-3 rounded-xl hover:bg-orange-50 transition-all duration-300"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={filters.subcategory.includes(subcategory)}
-                            onChange={() => handleSubcategoryChange(subcategory)}
-                            className="w-5 h-5 text-orange-600 bg-white border-2 border-gray-300 rounded focus:ring-orange-500 focus:ring-2 transition-all duration-300"
-                          />
-                          <span className="text-sm font-medium text-gray-600 group-hover:text-orange-700 transition-colors duration-300">
-                            {formatSubcategoryName(subcategory)}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={clearFilters}
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-300"
+              >
+                Clear All
+              </button>
+              <button
+                onClick={onClose}
+                className="lg:hidden text-gray-500 hover:text-gray-700 transition-colors duration-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
           </div>
-        </Card>
+
+          {/* Price Range */}
+          <div className="mb-8">
+            <h3 className="font-medium text-gray-900 mb-4">Price Range</h3>
+            <div className="space-y-3">
+              <div className="relative">
+                <input
+                  type="range"
+                  min="0"
+                  max="10000"
+                  value={filters.priceRange[1]}
+                  onChange={(e) => handlePriceChange(filters.priceRange[0], parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, #d4af37 0%, #d4af37 ${(filters.priceRange[1] / 10000) * 100}%, #e5e7eb ${(filters.priceRange[1] / 10000) * 100}%, #e5e7eb 100%)`
+                  }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>৳0</span>
+                <span className="font-medium text-gray-900">৳{filters.priceRange[1].toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div className="space-y-6">
+            {Object.entries(categories).map(([categoryKey, categoryData]) => (
+              <div key={categoryKey} className="border-b border-gray-100 pb-6 last:border-b-0">
+                <button
+                  onClick={() => handleCategoryChange(categoryKey)}
+                  className={`w-full text-left font-medium mb-3 transition-colors duration-300 ${
+                    filters.category === categoryKey ? 'text-gray-900' : 'text-gray-700 hover:text-gray-900'
+                  }`}
+                >
+                  {categoryData.name}
+                </button>
+                
+                {filters.category === categoryKey && (
+                  <div className="space-y-2">
+                    {categoryData.subcategories.map((subcategory) => (
+                      <label
+                        key={subcategory}
+                        className="flex items-center space-x-3 cursor-pointer group"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.subcategory.includes(subcategory)}
+                          onChange={() => handleSubcategoryChange(subcategory)}
+                          className="w-4 h-4 text-gold-600 bg-gray-100 border-gray-300 rounded focus:ring-gold-500 focus:ring-2"
+                        />
+                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors duration-300">
+                          {formatSubcategoryName(subcategory)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <style jsx>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
-          height: 24px;
-          width: 24px;
+          height: 20px;
+          width: 20px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #f97316, #ea580c);
+          background: #d4af37;
           cursor: pointer;
-          border: 3px solid #ffffff;
-          box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
-          transition: all 0.3s ease;
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-          transform: scale(1.2);
-          box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .slider::-moz-range-thumb {
-          height: 24px;
-          width: 24px;
+          height: 20px;
+          width: 20px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #f97316, #ea580c);
+          background: #d4af37;
           cursor: pointer;
-          border: 3px solid #ffffff;
-          box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
-          transition: all 0.3s ease;
-        }
-
-        .slider::-moz-range-thumb:hover {
-          transform: scale(1.2);
-          box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
       `}</style>
     </>

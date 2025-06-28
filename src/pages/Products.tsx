@@ -112,21 +112,21 @@ const Products: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100">
+      <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gradient-to-r from-gold-200 to-gold-300 rounded-2xl w-48 mb-8"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="h-8 bg-gray-200 rounded w-48 mb-8"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(12)].map((_, i) => (
-                <div key={i} className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gold-100">
-                  <div className="aspect-square bg-gradient-to-br from-gold-100 to-gold-200 rounded-t-3xl"></div>
-                  <div className="p-6">
-                    <div className="h-4 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl mb-3"></div>
-                    <div className="h-6 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl mb-3"></div>
-                    <div className="h-4 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl mb-4"></div>
+                <div key={i} className="bg-white rounded-2xl shadow-sm">
+                  <div className="aspect-square bg-gray-200 rounded-t-2xl"></div>
+                  <div className="p-5">
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
                     <div className="flex justify-between items-center">
-                      <div className="h-6 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl w-20"></div>
-                      <div className="h-10 bg-gradient-to-r from-gold-200 to-gold-300 rounded-xl w-24"></div>
+                      <div className="h-6 bg-gray-200 rounded w-20"></div>
+                      <div className="h-10 bg-gray-200 rounded w-24"></div>
                     </div>
                   </div>
                 </div>
@@ -139,81 +139,59 @@ const Products: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-gold-200/30 to-gold-300/30 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-gold-300/20 to-gold-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-gold-100/10 to-gold-200/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '6s' }}></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-4">
-              Our Collection
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover handpicked pieces that celebrate your unique style and elegance
-            </p>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            Our Products
+          </h1>
           
           {/* Search and Controls */}
-          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
-            <div className="flex-1 max-w-2xl relative group">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gold-400 w-5 h-5 group-focus-within:text-gold-600 transition-colors duration-300" />
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="flex-1 max-w-md relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search for your perfect piece..."
+                placeholder="Search products..."
                 value={filters.searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 border-2 border-gold-200 rounded-2xl focus:ring-4 focus:ring-gold-200 focus:border-gold-400 transition-all duration-300 bg-white/80 backdrop-blur-sm text-lg placeholder-gray-500 shadow-lg hover:shadow-xl"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white"
               />
             </div>
             
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setIsFilterOpen(true)}
-                className="lg:hidden flex items-center px-6 py-4 border-2 border-gold-300 rounded-2xl hover:bg-gold-50 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-105"
+                className="lg:hidden flex items-center px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-300 bg-white"
               >
-                <Filter className="w-5 h-5 mr-2 text-gold-600" />
-                <span className="font-medium text-gray-700">Filters</span>
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
               </button>
               
-              <div className="flex border-2 border-gold-200 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm shadow-lg">
+              <div className="flex border border-gray-300 rounded-xl overflow-hidden bg-white">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-4 transition-all duration-300 ${
-                    viewMode === 'grid' 
-                      ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-lg' 
-                      : 'bg-transparent text-gray-600 hover:bg-gold-50'
-                  }`}
+                  className={`p-3 ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} transition-colors duration-300`}
                 >
-                  <Grid className="w-5 h-5" />
+                  <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-4 transition-all duration-300 ${
-                    viewMode === 'list' 
-                      ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-lg' 
-                      : 'bg-transparent text-gray-600 hover:bg-gold-50'
-                  }`}
+                  className={`p-3 ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} transition-colors duration-300`}
                 >
-                  <List className="w-5 h-5" />
+                  <List className="w-4 h-4" />
                 </button>
               </div>
             </div>
           </div>
           
-          <div className="mt-6 text-center">
-            <span className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-sm font-medium text-gray-600 shadow-lg border border-gold-200">
-              Showing {filteredProducts.length} of {products.length} exquisite pieces
-            </span>
+          <div className="mt-4 text-sm text-gray-600">
+            Showing {filteredProducts.length} of {products.length} products
           </div>
         </div>
 
-        <div className="flex gap-12">
+        <div className="flex gap-8">
           {/* Filters Sidebar - Desktop Only */}
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-8">
@@ -237,12 +215,12 @@ const Products: React.FC = () => {
           {/* Products Grid */}
           <div className="flex-1">
             {filteredProducts.length === 0 ? (
-              <div className="text-center py-20 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gold-200">
-                <div className="text-gold-400 mb-6">
-                  <Filter className="w-20 h-20 mx-auto" />
+              <div className="text-center py-12 bg-white rounded-2xl shadow-sm">
+                <div className="text-gray-400 mb-4">
+                  <Filter className="w-16 h-16 mx-auto" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">No treasures found</h3>
-                <p className="text-gray-600 mb-8 text-lg">Try adjusting your filters to discover more beautiful pieces.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-600 mb-4">Try adjusting your filters or search terms.</p>
                 <button
                   onClick={() => setFilters({
                     category: '',
@@ -250,13 +228,13 @@ const Products: React.FC = () => {
                     priceRange: [0, 10000],
                     searchQuery: ''
                   })}
-                  className="px-8 py-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-white font-medium rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                  className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-colors duration-300"
                 >
-                  Clear All Filters
+                  Clear Filters
                 </button>
               </div>
             ) : (
-              <div className={`grid gap-8 ${
+              <div className={`grid gap-6 ${
                 viewMode === 'grid' 
                   ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' 
                   : 'grid-cols-1'
@@ -265,10 +243,7 @@ const Products: React.FC = () => {
                   <div
                     key={product.id}
                     className="animate-fade-in"
-                    style={{ 
-                      animationDelay: `${index * 100}ms`,
-                      animationFillMode: 'both'
-                    }}
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <ProductCard product={product} />
                   </div>

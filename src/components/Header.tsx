@@ -20,59 +20,59 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+    <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-gold-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-gray-900 to-gray-700 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-lg">
-                <span className="text-white font-bold text-lg">IS</span>
-              </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-orange-400 to-red-500 rounded-full"></div>
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="w-8 h-8 bg-gradient-to-r from-gold-600 to-gold-700 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <span className="text-white font-bold text-sm">IS</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors duration-300">
+            <span className="text-xl font-serif font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
               In Style BD
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2 bg-gray-50 rounded-2xl p-2">
+          <nav className="hidden md:flex space-x-8">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`relative px-6 py-3 text-sm font-medium rounded-xl transition-all duration-300 ${
+                className={`relative px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                   isActive(item.href)
-                    ? 'bg-white text-gray-900 shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                    ? 'text-gold-600'
+                    : 'text-gray-700 hover:text-gold-600'
                 }`}
               >
                 {item.name}
+                {isActive(item.href) && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold-600"></div>
+                )}
               </Link>
             ))}
           </nav>
 
           {/* Right Icons */}
-          <div className="flex items-center space-x-3">
-            <button className="p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300">
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/search"
+              className="p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
+            >
               <Search className="w-5 h-5" />
-            </button>
+            </Link>
             
             <Link
               to={authState.isAuthenticated ? "/admin" : "/admin/login"}
-              className="p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300"
+              className="p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
             >
               <User className="w-5 h-5" />
             </Link>
 
-            <Link 
-              to="/cart" 
-              className="relative p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300 group"
-            >
+            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300 group">
               <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
               {cartState.itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-gold-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {cartState.itemCount}
                 </span>
               )}
@@ -81,7 +81,7 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300"
+              className="md:hidden p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -90,17 +90,17 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-6 border-t border-gray-100 animate-slide-up">
-            <div className="space-y-2">
+          <div className="md:hidden border-t border-gold-200">
+            <div className="py-4 space-y-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`block px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 ${
+                  className={`block px-3 py-2 text-base font-medium transition-colors duration-300 ${
                     isActive(item.href)
-                      ? 'text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-gold-600 bg-gold-50'
+                      : 'text-gray-700 hover:text-gold-600 hover:bg-gold-50'
                   }`}
                 >
                   {item.name}
