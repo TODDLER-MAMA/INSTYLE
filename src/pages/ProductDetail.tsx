@@ -327,7 +327,7 @@ const ProductDetail: React.FC = () => {
                 )
               })}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Tabs Section */}
