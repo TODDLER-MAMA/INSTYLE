@@ -4,7 +4,6 @@ import { ShoppingBag, Heart, Eye, Star } from 'lucide-react'
 import { Product, ProductVariant } from '../types'
 import { useCart } from '../contexts/CartContext'
 import { useNavigate } from 'react-router-dom'
-import Card from './ui/Card'
 import Button from './ui/Button'
 
 interface ProductCardProps {
@@ -81,14 +80,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
       onClick={handleProductClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="cursor-pointer"
+      className="cursor-pointer group"
     >
-      <Card className="overflow-hidden group">
+      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
         <div className="relative overflow-hidden">
           <div className="aspect-square bg-gradient-to-br from-gold-50 to-gold-100">
             <img
@@ -102,81 +101,75 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: isHovered ? 1 : 0 }}
-            className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center"
+            className="absolute inset-0 bg-black/20 flex items-center justify-center"
           >
-            <div className="flex space-x-3">
-              <motion.div
+            <div className="flex space-x-2">
+              <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                onClick={handleAddToCart}
+                disabled={displayStock === 0}
+                className="w-10 h-10 bg-white hover:bg-gold-50 rounded-xl flex items-center justify-center shadow-lg transition-colors duration-300"
               >
-                <Button
-                  onClick={handleAddToCart}
-                  disabled={displayStock === 0}
-                  size="sm"
-                  className="bg-white text-gray-900 hover:bg-gold-50 shadow-lg"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                </Button>
-              </motion.div>
-              <motion.div
+                <ShoppingBag className="w-4 h-4 text-gray-700" />
+              </motion.button>
+              <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                className="w-10 h-10 bg-white hover:bg-gold-50 rounded-xl flex items-center justify-center shadow-lg transition-colors duration-300"
               >
-                <Button variant="outline" size="sm" className="bg-white shadow-lg">
-                  <Heart className="w-4 h-4" />
-                </Button>
-              </motion.div>
-              <motion.div
+                <Heart className="w-4 h-4 text-gray-700" />
+              </motion.button>
+              <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                className="w-10 h-10 bg-white hover:bg-gold-50 rounded-xl flex items-center justify-center shadow-lg transition-colors duration-300"
               >
-                <Button variant="outline" size="sm" className="bg-white shadow-lg">
-                  <Eye className="w-4 h-4" />
-                </Button>
-              </motion.div>
+                <Eye className="w-4 h-4 text-gray-700" />
+              </motion.button>
             </div>
           </motion.div>
           
           {/* Status badges */}
           <div className="absolute top-3 left-3 flex flex-col space-y-2">
             {displayStock < 10 && displayStock > 0 && (
-              <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
                 Only {displayStock} left
               </span>
             )}
             {displayStock === 0 && (
-              <span className="bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <span className="bg-gray-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
                 Out of Stock
               </span>
             )}
             {product.is_featured && (
-              <span className="bg-gradient-to-r from-gold-500 to-gold-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+              <span className="bg-gradient-to-r from-gold-500 to-gold-600 text-white px-2 py-1 rounded-lg text-xs font-medium">
                 Featured
               </span>
             )}
           </div>
         </div>
         
-        <div className="p-6">
+        <div className="p-4">
           {/* Brand and Category */}
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="w-5 h-5 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
+          <div className="flex items-center space-x-2 mb-2">
+            <div className="w-4 h-4 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">IS</span>
             </div>
             <span className="text-xs font-medium text-gray-900">In Style BD</span>
             <span className="text-xs text-gray-500">• {product.category}</span>
           </div>
           
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-gold-600 transition-colors duration-300">
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-gold-600 transition-colors duration-300 text-sm">
             {product.name}
           </h3>
           
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          <p className="text-gray-600 text-xs mb-3 line-clamp-2">
             {product.description}
           </p>
 
           {/* Rating */}
-          <div className="flex items-center space-x-1 mb-4">
+          <div className="flex items-center space-x-1 mb-3">
             {[...Array(5)].map((_, i) => (
               <Star key={i} className="w-3 h-3 text-gold-400 fill-current" />
             ))}
@@ -185,8 +178,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
           {/* Variant colors preview */}
           {product.variants && product.variants.length > 1 && (
-            <div className="mb-4">
-              <div className="flex space-x-2">
+            <div className="mb-3">
+              <div className="flex space-x-1">
                 {product.variants.slice(0, 4).map((variant, index) => (
                   <motion.button
                     key={variant.id}
@@ -196,7 +189,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                       e.stopPropagation()
                       setSelectedVariant(variant)
                     }}
-                    className={`w-6 h-6 rounded-full border-2 transition-all ${
+                    className={`w-5 h-5 rounded-full border-2 transition-all ${
                       selectedVariant?.id === variant.id ? 'border-gold-500 shadow-lg' : 'border-gray-300'
                     }`}
                     style={{
@@ -214,7 +207,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                   />
                 ))}
                 {product.variants.length > 4 && (
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 bg-gray-100 flex items-center justify-center">
+                  <div className="w-5 h-5 rounded-full border-2 border-gray-300 bg-gray-100 flex items-center justify-center">
                     <span className="text-xs text-gray-600">+{product.variants.length - 4}</span>
                   </div>
                 )}
@@ -224,7 +217,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-gold-600 to-gold-700 bg-clip-text text-transparent">
+              <span className="text-lg font-bold bg-gradient-to-r from-gold-600 to-gold-700 bg-clip-text text-transparent">
                 {typeof displayPrice === 'number' ? formatPrice(displayPrice) : `৳${displayPrice}`}
               </span>
               {selectedVariant && (
@@ -238,12 +231,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               onClick={handleAddToCart}
               disabled={displayStock === 0}
               size="sm"
+              className="text-xs px-3 py-1"
             >
               {displayStock === 0 ? 'Out of Stock' : 'Add to Cart'}
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
     </motion.div>
   )
 }
