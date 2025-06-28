@@ -94,14 +94,17 @@ const Home: React.FC = () => {
   ]
 
   // Brand names for the scroll velocity animation
-  const brandNames = [
-    'CHANEL', 'DIOR', 'GUCCI', 'PRADA', 'VERSACE', 'ARMANI', 'VALENTINO', 'BALENCIAGA',
-    'SAINT LAURENT', 'BOTTEGA VENETA', 'HERMÈS', 'LOUIS VUITTON', 'FENDI', 'GIVENCHY'
+  const luxuryBrands = [
+    'CHANEL', 'DIOR', 'GUCCI', 'PRADA', 'VERSACE', 'ARMANI', 'VALENTINO', 'BALENCIAGA'
+  ]
+
+  const fashionBrands = [
+    'ZARA', 'H&M', 'UNIQLO', 'MANGO', 'COS', 'MASSIMO DUTTI', 'BERSHKA', 'PULL&BEAR'
   ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100/50">
-      {/* Hero Section - Smaller and fits in viewport */}
+      {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background gradient elements */}
         <div className="absolute inset-0">
@@ -110,14 +113,14 @@ const Home: React.FC = () => {
         </div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Simple Logo - Smaller */}
+          {/* Simple Logo */}
           <div className="flex justify-center mb-6">
             <div className="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">IS</span>
             </div>
           </div>
           
-          {/* Main Heading - Smaller */}
+          {/* Main Heading */}
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
             Elegance Meets
             <span className="block bg-gradient-to-r from-gold-500 to-gold-700 bg-clip-text text-transparent">
@@ -125,12 +128,12 @@ const Home: React.FC = () => {
             </span>
           </h1>
           
-          {/* Subtitle - Smaller */}
+          {/* Subtitle */}
           <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Discover our curated collection of exquisite dresses, stunning jewelry, and premium beauty products.
           </p>
           
-          {/* CTA Buttons - Smaller */}
+          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/products">
               <Button size="md" className="group">
@@ -148,7 +151,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Text Pressure Section */}
+      {/* Text Pressure Section with ScrollReveal */}
       <section className="relative py-32 overflow-hidden">
         {/* Background with gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gold-50/30"></div>
@@ -303,7 +306,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Brand Names Scroll Velocity Section */}
+      {/* First Horizontal Scroll - Luxury Brands */}
       <section className="py-16 bg-gradient-to-r from-gray-900 to-black overflow-hidden">
         <div className="mb-12 text-center">
           <motion.div
@@ -313,10 +316,10 @@ const Home: React.FC = () => {
             viewport={{ once: true }}
           >
             <span className="inline-block text-sm font-medium text-gold-400 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-900/20 rounded-full">
-              Luxury Brands We Carry
+              Luxury Collections
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Premium Collections
+              Premium Brands We Carry
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               Discover the world's most prestigious fashion and beauty brands in our carefully curated selection.
@@ -325,7 +328,7 @@ const Home: React.FC = () => {
         </div>
 
         <ScrollVelocity
-          texts={brandNames}
+          texts={luxuryBrands}
           velocity={50}
           className="text-6xl md:text-8xl font-bold text-gold-500/20 select-none"
           parallaxClassName="py-8"
@@ -337,7 +340,7 @@ const Home: React.FC = () => {
         />
       </section>
 
-      {/* Categories Section - Redesigned Cards */}
+      {/* Categories Section */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -398,7 +401,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Products - Smaller */}
+      {/* Featured Products */}
       <section className="py-16 bg-gradient-to-r from-white to-gold-50/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -458,7 +461,41 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section - Redesigned with better spacing */}
+      {/* Second Horizontal Scroll - Fashion Brands */}
+      <section className="py-16 bg-gradient-to-r from-gold-100 to-gold-200 overflow-hidden">
+        <div className="mb-12 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <span className="inline-block text-sm font-medium text-gold-800 uppercase tracking-wide mb-4 px-4 py-2 bg-white/50 rounded-full">
+              Fashion Forward
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Contemporary Collections
+            </h2>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+              Modern fashion brands that define today's style trends and accessible luxury.
+            </p>
+          </motion.div>
+        </div>
+
+        <ScrollVelocity
+          texts={fashionBrands}
+          velocity={40}
+          className="text-5xl md:text-7xl font-bold text-gray-800/30 select-none"
+          parallaxClassName="py-6"
+          scrollerClassName="flex whitespace-nowrap"
+          parallaxStyle={{ 
+            borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
+          }}
+        />
+      </section>
+
+      {/* Features Section */}
       <section className="py-16 bg-gradient-to-br from-gold-50 to-gold-100/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
