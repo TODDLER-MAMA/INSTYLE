@@ -76,7 +76,9 @@ const Home: React.FC = () => {
       image: 'https://images.pexels.com/photos/985635/pexels-photo-985635.jpeg?auto=compress&cs=tinysrgb&w=600',
       href: '/products?category=apparel',
       count: '200+ items',
-      gradient: 'from-gold-400/20 to-gold-600/30'
+      gradient: 'from-emerald-400/90 to-emerald-600/90',
+      bgGradient: 'from-emerald-50 to-emerald-100',
+      icon: '👗'
     },
     {
       name: 'Jewelry',
@@ -84,7 +86,9 @@ const Home: React.FC = () => {
       image: 'https://images.pexels.com/photos/1454188/pexels-photo-1454188.jpeg?auto=compress&cs=tinysrgb&w=600',
       href: '/products?category=jewelry',
       count: '150+ items',
-      gradient: 'from-gold-500/20 to-gold-700/30'
+      gradient: 'from-purple-400/90 to-purple-600/90',
+      bgGradient: 'from-purple-50 to-purple-100',
+      icon: '💎'
     },
     {
       name: 'Beauty',
@@ -92,7 +96,9 @@ const Home: React.FC = () => {
       image: 'https://images.pexels.com/photos/3373726/pexels-photo-3373726.jpeg?auto=compress&cs=tinysrgb&w=600',
       href: '/products?category=beauty',
       count: '100+ items',
-      gradient: 'from-gold-600/20 to-gold-800/30'
+      gradient: 'from-rose-400/90 to-rose-600/90',
+      bgGradient: 'from-rose-50 to-rose-100',
+      icon: '💄'
     }
   ]
 
@@ -374,69 +380,100 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="relative py-16 bg-gradient-to-br from-white via-gold-50/30 to-gold-100/50">
+      {/* Categories Section - Enhanced Design */}
+      <section className="relative py-20 bg-gradient-to-br from-white via-gold-50/30 to-gold-100/50">
         {/* Gradient transition from previous section */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-50/30 via-white/60 to-transparent"></div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Shop by Category
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our carefully curated collections designed to enhance your natural beauty and style.
-            </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block text-sm font-medium text-gold-600 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-100 rounded-full">
+                Our Collections
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+                Shop by Category
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Explore our carefully curated collections designed to enhance your natural beauty and style.
+              </p>
+            </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {categories.map((category, index) => (
               <motion.div
                 key={category.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                className="relative"
+                className="group"
               >
-                <GlowingEffect
-                  disabled={false}
-                  proximity={100}
-                  spread={40}
-                  movementDuration={1.2}
-                  borderWidth={3}
-                  className="rounded-3xl"
-                />
-                <Link to={category.href} className="group block">
-                  <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-                    {/* Background with gradient overlay */}
-                    <div className="relative h-64">
+                <Link to={category.href} className="block">
+                  <div className="relative overflow-hidden rounded-3xl bg-white shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3">
+                    {/* Background Image */}
+                    <div className="relative h-80 overflow-hidden">
                       <img
                         src={category.image}
                         alt={category.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} to-black/60`}></div>
-                    </div>
+                      
+                      {/* Gradient Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80`}></div>
+                      
+                      {/* Floating Icon */}
+                      <div className="absolute top-6 right-6">
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+                          {category.icon}
+                        </div>
+                      </div>
 
-                    {/* Content with better spacing */}
-                    <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
-                      <div className="flex justify-end">
-                        <span className="text-xs font-medium bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                      {/* Item Count Badge */}
+                      <div className="absolute top-6 left-6">
+                        <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-full">
                           {category.count}
                         </span>
                       </div>
+                    </div>
 
-                      <div className="space-y-3">
-                        <h3 className="text-2xl font-bold group-hover:text-gold-300 transition-colors duration-300">
-                          {category.name}
-                        </h3>
-                        <p className="text-gray-200 text-sm leading-relaxed">
+                    {/* Content Section */}
+                    <div className={`relative bg-gradient-to-br ${category.bgGradient} p-8`}>
+                      {/* Decorative Element */}
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-600"></div>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-2xl font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
+                            {category.name}
+                          </h3>
+                          <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-gold-600 group-hover:translate-x-2 transition-all duration-300" />
+                        </div>
+                        
+                        <p className="text-gray-600 leading-relaxed">
                           {category.description}
                         </p>
-                        <div className="inline-flex items-center text-sm font-medium group-hover:translate-x-2 transition-transform duration-300">
-                          Shop Now <ArrowRight className="ml-2 w-4 h-4" />
+                        
+                        {/* Action Button */}
+                        <div className="pt-4">
+                          <div className="inline-flex items-center text-gold-600 font-semibold group-hover:text-gold-700 transition-colors duration-300">
+                            <span className="mr-2">Explore Collection</span>
+                            <div className="w-8 h-8 bg-gold-100 group-hover:bg-gold-200 rounded-full flex items-center justify-center transition-colors duration-300">
+                              <ArrowRight className="w-4 h-4" />
+                            </div>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Decorative Pattern */}
+                      <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10">
+                        <div className="w-full h-full bg-gradient-to-tl from-gold-400 to-transparent rounded-tl-full"></div>
                       </div>
                     </div>
                   </div>
