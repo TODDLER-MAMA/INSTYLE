@@ -164,14 +164,17 @@ const Home: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-white to-gold-100/50">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gold-50 via-white to-gold-100/50">
         {/* Background gradient elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-gold-200/30 to-gold-300/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-gold-300/20 to-gold-400/30 rounded-full blur-3xl"></div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-gray-50/50"></div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Simple Logo */}
@@ -213,7 +216,10 @@ const Home: React.FC = () => {
       </section>
 
       {/* Text Pressure Section with ScrollReveal */}
-      <section className="relative py-32 overflow-hidden">
+      <section className="relative py-32 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gold-50/30">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-100/30 to-transparent"></div>
+        
         {/* Background with gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gold-50/30"></div>
         
@@ -270,6 +276,9 @@ const Home: React.FC = () => {
             <Gem className="w-5 h-5 text-gold-600/50" />
           </motion.div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -368,7 +377,10 @@ const Home: React.FC = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16">
+      <section className="py-16 bg-gradient-to-br from-white via-gold-50/30 to-gold-100/50">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-gold-50/30 to-transparent"></div>
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -435,10 +447,16 @@ const Home: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gray-800/10 to-gray-900/30"></div>
       </section>
 
       {/* First Horizontal Scroll - Premium Brands (Only 2 Lines) */}
-      <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 overflow-hidden relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-100/20 to-transparent"></div>
+
         <div className="mb-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -484,10 +502,16 @@ const Home: React.FC = () => {
             }}
           />
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white/20"></div>
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 bg-gradient-to-r from-white to-gold-50/50">
+      <section className="py-16 bg-gradient-to-r from-white to-gold-50/50 relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gray-900/20 to-transparent"></div>
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
@@ -544,10 +568,16 @@ const Home: React.FC = () => {
             </Link>
           </div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-gold-100/30"></div>
       </section>
 
       {/* Second Horizontal Scroll - Contemporary Collections (Only 2 Lines) */}
-      <section className="py-20 bg-gradient-to-r from-gold-100 via-gold-200 to-gold-100 overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-gold-100 via-gold-200 to-gold-100 overflow-hidden relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/50 to-transparent"></div>
+
         <div className="mb-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -593,10 +623,16 @@ const Home: React.FC = () => {
             }}
           />
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-gray-50"></div>
       </section>
 
       {/* Services Section with TiltedCard Animation */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-white relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-200/30 to-transparent"></div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <motion.div
@@ -670,10 +706,16 @@ const Home: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-gold-50/50"></div>
       </section>
 
       {/* Facilities Section with Tilted Cards */}
-      <section className="py-20 bg-gradient-to-br from-gold-50 to-gold-100/50">
+      <section className="py-20 bg-gradient-to-br from-gold-50 to-gold-100/50 relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/50 to-transparent"></div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <motion.div
@@ -754,10 +796,16 @@ const Home: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gray-700/10 to-gray-900/30"></div>
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900">
+      <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-100/20 to-transparent"></div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <motion.div
@@ -837,10 +885,16 @@ const Home: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Gradient transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-gray-900/50"></div>
       </section>
 
       {/* Features Section with SpotlightCard */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative">
+        {/* Gradient transition from previous section */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gray-900/50 to-transparent"></div>
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <motion.div
@@ -912,6 +966,9 @@ const Home: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Gradient transition to footer */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-gray-900"></div>
       </section>
     </div>
   )
