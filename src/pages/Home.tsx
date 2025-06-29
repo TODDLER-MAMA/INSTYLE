@@ -103,13 +103,9 @@ const Home: React.FC = () => {
     }
   ]
 
-  // Brand names for the scroll velocity animation - Only 2 lines each
+  // Brand names for the scroll velocity animation - Only 2 lines
   const luxuryBrandsLine1 = ['CHANEL', 'DIOR', 'GUCCI', 'PRADA', 'VERSACE', 'ARMANI']
   const luxuryBrandsLine2 = ['VALENTINO', 'BALENCIAGA', 'HERMÈS', 'CARTIER', 'TIFFANY', 'BULGARI']
-
-  // Fashion Forward section - ONLY 2 lines
-  const fashionBrandsLine1 = ['ZARA', 'H&M', 'UNIQLO', 'MANGO', 'COS', 'MASSIMO DUTTI']
-  const fashionBrandsLine2 = ['BERSHKA', 'PULL&BEAR', 'STRADIVARIUS', 'FOREVER21', 'GAP', 'TOMMY']
 
   const services = [
     {
@@ -508,7 +504,7 @@ const Home: React.FC = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gray-800/10 to-gray-900/30"></div>
       </section>
 
-      {/* First Horizontal Scroll - Premium Brands (Only 2 Lines) */}
+      {/* Single Horizontal Scroll - Premium Brands */}
       <section className="relative py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 overflow-hidden">
         {/* Gradient transition from previous section */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-100/20 via-gray-800/20 to-transparent"></div>
@@ -627,61 +623,6 @@ const Home: React.FC = () => {
 
         {/* Gradient transition to next section */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gold-50/30 to-gold-100/30"></div>
-      </section>
-
-      {/* Second Horizontal Scroll - Contemporary Collections (ONLY 2 Lines) */}
-      <section className="relative py-20 bg-gradient-to-r from-gold-100 via-gold-200 to-gold-100 overflow-hidden">
-        {/* Gradient transition from previous section */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/50 via-gold-50/50 to-transparent"></div>
-
-        <div className="mb-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <span className="inline-block text-sm font-medium text-gold-800 uppercase tracking-wide mb-4 px-4 py-2 bg-white/50 rounded-full">
-              Fashion Forward
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-              Contemporary Collections
-            </h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Modern fashion brands that define today's style trends and accessible luxury.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Only two horizontal scroll lines */}
-        <div className="space-y-8">
-          <ScrollVelocity
-            texts={fashionBrandsLine1}
-            velocity={40}
-            className="text-5xl md:text-7xl font-bold text-gray-800/30 select-none tracking-wider"
-            parallaxClassName="py-4"
-            scrollerClassName="flex whitespace-nowrap"
-            parallaxStyle={{ 
-              borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-              borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
-            }}
-          />
-          
-          <ScrollVelocity
-            texts={fashionBrandsLine2}
-            velocity={-35}
-            className="text-5xl md:text-7xl font-bold text-gray-800/20 select-none tracking-wider"
-            parallaxClassName="py-4"
-            scrollerClassName="flex whitespace-nowrap"
-            parallaxStyle={{ 
-              borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-              borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
-            }}
-          />
-        </div>
-
-        {/* Gradient transition to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gold-200/50 to-gray-50"></div>
       </section>
 
       {/* Services Section with TiltedCard Animation */}
