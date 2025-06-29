@@ -12,6 +12,7 @@ import ScrollReveal from '../components/ScrollReveal'
 import ScrollVelocity from '../components/ScrollVelocity'
 import { GlowingEffect } from '../components/ui/GlowingEffect'
 import TiltedCard from '../components/ui/TiltedCard'
+import SpotlightCard from '../components/ui/SpotlightCard'
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
@@ -838,28 +839,50 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 bg-gradient-to-br from-gold-50 to-gold-100/50">
+      {/* Features Section with SpotlightCard */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block text-sm font-medium text-gold-400 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-900/20 rounded-full">
+                Our Promise
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                Excellence in Every Detail
+              </h2>
+              <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+                Discover what makes In Style BD the premier destination for fashion, jewelry, and beauty in Bangladesh.
+              </p>
+            </motion.div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 icon: Heart,
                 title: "Curated with Love",
                 description: "Every item is carefully selected to ensure the highest quality and style for our customers.",
-                gradient: "from-gold-400 to-gold-500"
+                gradient: "from-gold-400 to-gold-500",
+                spotlightColor: "rgba(212, 175, 55, 0.3)" as const
               },
               {
                 icon: Truck,
                 title: "Fast Delivery",
                 description: "Quick and reliable delivery across Bangladesh with careful packaging and tracking.",
-                gradient: "from-gold-500 to-gold-600"
+                gradient: "from-gold-500 to-gold-600",
+                spotlightColor: "rgba(212, 175, 55, 0.35)" as const
               },
               {
                 icon: Shield,
                 title: "Premium Quality",
                 description: "Only the finest materials and craftsmanship for lasting beauty and satisfaction.",
-                gradient: "from-gold-600 to-gold-700"
+                gradient: "from-gold-600 to-gold-700",
+                spotlightColor: "rgba(212, 175, 55, 0.4)" as const
               }
             ].map((feature, index) => {
               const IconComponent = feature.icon
@@ -872,25 +895,18 @@ const Home: React.FC = () => {
                   viewport={{ once: true }}
                   className="text-center"
                 >
-                  <div className="relative">
-                    <GlowingEffect
-                      disabled={false}
-                      proximity={60}
-                      spread={20}
-                      movementDuration={2.5}
-                      borderWidth={1}
-                      className="rounded-2xl"
-                    />
-                    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
-                      <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-xl mb-4`}>
-                        <IconComponent className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {feature.description}
-                      </p>
+                  <SpotlightCard
+                    className="h-full"
+                    spotlightColor={feature.spotlightColor}
+                  >
+                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-xl mb-6 mx-auto`}>
+                      <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                  </div>
+                    <h3 className="text-xl font-semibold text-white mb-4">{feature.title}</h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </SpotlightCard>
                 </motion.div>
               )
             })}
