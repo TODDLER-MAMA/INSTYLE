@@ -13,6 +13,7 @@ import ScrollVelocity from '../components/ScrollVelocity'
 import { GlowingEffect } from '../components/ui/GlowingEffect'
 import TiltedCard from '../components/ui/TiltedCard'
 import SpotlightCard from '../components/ui/SpotlightCard'
+import { CardContainer, CardBody, CardItem } from '../components/ui/3d-card'
 
 const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
@@ -380,7 +381,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories Section - Enhanced Design */}
+      {/* Categories Section - Enhanced with 3D Card Effect */}
       <section className="relative py-20 bg-gradient-to-br from-white via-gold-50/30 to-gold-100/50">
         {/* Gradient transition from previous section */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-50/30 via-white/60 to-transparent"></div>
@@ -415,69 +416,89 @@ const Home: React.FC = () => {
                 viewport={{ once: true }}
                 className="group"
               >
-                <Link to={category.href} className="block">
-                  <div className="relative overflow-hidden rounded-3xl bg-white shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-3">
-                    {/* Background Image */}
-                    <div className="relative h-80 overflow-hidden">
-                      <img
-                        src={category.image}
-                        alt={category.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      
-                      {/* Gradient Overlay */}
-                      <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80`}></div>
-                      
-                      {/* Floating Icon */}
-                      <div className="absolute top-6 right-6">
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
-                          {category.icon}
-                        </div>
-                      </div>
-
-                      {/* Item Count Badge */}
-                      <div className="absolute top-6 left-6">
-                        <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-full">
-                          {category.count}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content Section */}
-                    <div className={`relative bg-gradient-to-br ${category.bgGradient} p-8`}>
-                      {/* Decorative Element */}
-                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-600"></div>
-                      
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-2xl font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
-                            {category.name}
-                          </h3>
-                          <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-gold-600 group-hover:translate-x-2 transition-all duration-300" />
-                        </div>
-                        
-                        <p className="text-gray-600 leading-relaxed">
-                          {category.description}
-                        </p>
-                        
-                        {/* Action Button */}
-                        <div className="pt-4">
-                          <div className="inline-flex items-center text-gold-600 font-semibold group-hover:text-gold-700 transition-colors duration-300">
-                            <span className="mr-2">Explore Collection</span>
-                            <div className="w-8 h-8 bg-gold-100 group-hover:bg-gold-200 rounded-full flex items-center justify-center transition-colors duration-300">
-                              <ArrowRight className="w-4 h-4" />
+                <CardContainer className="inter-var py-0">
+                  <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-gold-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-3xl p-0 border shadow-lg">
+                    <Link to={category.href} className="block">
+                      {/* Background Image with 3D Effect */}
+                      <CardItem translateZ="100" className="w-full">
+                        <div className="relative h-80 overflow-hidden rounded-t-3xl">
+                          <img
+                            src={category.image}
+                            alt={category.name}
+                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700"
+                          />
+                          
+                          {/* Gradient Overlay */}
+                          <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80`}></div>
+                          
+                          {/* Floating Icon with 3D Effect */}
+                          <CardItem
+                            translateZ="150"
+                            className="absolute top-6 right-6"
+                          >
+                            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl group-hover/card:scale-110 transition-transform duration-300">
+                              {category.icon}
                             </div>
-                          </div>
+                          </CardItem>
+
+                          {/* Item Count Badge with 3D Effect */}
+                          <CardItem
+                            translateZ="120"
+                            className="absolute top-6 left-6"
+                          >
+                            <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-full">
+                              {category.count}
+                            </span>
+                          </CardItem>
+                        </div>
+                      </CardItem>
+
+                      {/* Content Section with 3D Effects */}
+                      <div className={`relative bg-gradient-to-br ${category.bgGradient} p-8 rounded-b-3xl`}>
+                        {/* Decorative Element */}
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-600"></div>
+                        
+                        <div className="space-y-4">
+                          <CardItem
+                            translateZ="50"
+                            className="flex items-center justify-between"
+                          >
+                            <h3 className="text-2xl font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
+                              {category.name}
+                            </h3>
+                            <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-gold-600 group-hover:translate-x-2 transition-all duration-300" />
+                          </CardItem>
+                          
+                          <CardItem
+                            translateZ="60"
+                            as="p"
+                            className="text-gray-600 leading-relaxed"
+                          >
+                            {category.description}
+                          </CardItem>
+                          
+                          {/* Action Button with 3D Effect */}
+                          <CardItem
+                            translateZ="80"
+                            className="pt-4"
+                          >
+                            <div className="inline-flex items-center text-gold-600 font-semibold group-hover:text-gold-700 transition-colors duration-300">
+                              <span className="mr-2">Explore Collection</span>
+                              <div className="w-8 h-8 bg-gold-100 group-hover:bg-gold-200 rounded-full flex items-center justify-center transition-colors duration-300">
+                                <ArrowRight className="w-4 h-4" />
+                              </div>
+                            </div>
+                          </CardItem>
+                        </div>
+
+                        {/* Decorative Pattern */}
+                        <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10">
+                          <div className="w-full h-full bg-gradient-to-tl from-gold-400 to-transparent rounded-tl-full"></div>
                         </div>
                       </div>
-
-                      {/* Decorative Pattern */}
-                      <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10">
-                        <div className="w-full h-full bg-gradient-to-tl from-gold-400 to-transparent rounded-tl-full"></div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                    </Link>
+                  </CardBody>
+                </CardContainer>
               </motion.div>
             ))}
           </div>
