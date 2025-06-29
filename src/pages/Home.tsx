@@ -100,6 +100,7 @@ const Home: React.FC = () => {
   const luxuryBrandsLine1 = ['CHANEL', 'DIOR', 'GUCCI', 'PRADA', 'VERSACE', 'ARMANI']
   const luxuryBrandsLine2 = ['VALENTINO', 'BALENCIAGA', 'HERMÈS', 'CARTIER', 'TIFFANY', 'BULGARI']
 
+  // Fashion Forward section - ONLY 2 lines
   const fashionBrandsLine1 = ['ZARA', 'H&M', 'UNIQLO', 'MANGO', 'COS', 'MASSIMO DUTTI']
   const fashionBrandsLine2 = ['BERSHKA', 'PULL&BEAR', 'STRADIVARIUS', 'FOREVER21', 'GAP', 'TOMMY']
 
@@ -570,7 +571,7 @@ const Home: React.FC = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gold-50/30 to-gold-100/30"></div>
       </section>
 
-      {/* Second Horizontal Scroll - Contemporary Collections (Only 2 Lines) */}
+      {/* Second Horizontal Scroll - Contemporary Collections (ONLY 2 Lines) */}
       <section className="relative py-20 bg-gradient-to-r from-gold-100 via-gold-200 to-gold-100 overflow-hidden">
         {/* Gradient transition from previous section */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/50 via-gold-50/50 to-transparent"></div>
