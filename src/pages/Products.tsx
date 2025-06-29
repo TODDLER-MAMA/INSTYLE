@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Filter, Grid, List, Search } from 'lucide-react'
+import { Filter, Grid, List, Search, Star, Heart, ShoppingBag } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { supabase } from '../lib/supabase'
 import { Product, FilterState } from '../types'
-import ProductCard from '../components/ProductCard'
+import { useCart } from '../contexts/CartContext'
 import FilterSidebar from '../components/FilterSidebar'
 
 const Products: React.FC = () => {
@@ -13,6 +14,7 @@ const Products: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const { dispatch } = useCart()
   
   const [filters, setFilters] = useState<FilterState>({
     category: searchParams.get('category') || '',
@@ -110,6 +112,46 @@ const Products: React.FC = () => {
     setFilters(prev => ({ ...prev, searchQuery: query }))
   }
 
+  const handleAddToCart = (product: Product) => {
+    const defaultVariant = product.variants?.find(v => v.is_default) || product.variants?.[0]
+    dispatch({ 
+      type: 'ADD_ITEM', 
+      payload: { 
+        product, 
+        variant: defaultVariant || undefined
+      } 
+    })
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-BD', {
+      style: 'currency',
+      currency: 'BDT',
+      minimumFractionDigits: 0,
+    }).format(price)
+  }
+
+  const getDisplayPrice = (product: Product) => {
+    if (product.variants && product.variants.length > 0) {
+      const defaultVariant = product.variants.find(v => v.is_default) || product.variants[0]
+      return defaultVariant.price
+    }
+    return product.base_price
+  }
+
+  const getDisplayStock = (product: Product) => {
+    if (product.variants && product.variants.length > 0) {
+      return product.variants.reduce((total, variant) => total + variant.stock, 0)
+    }
+    return 0
+  }
+
+  const getPrimaryImage = (product: Product) => {
+    return product.images?.find(img => img.is_primary)?.image_url || 
+           product.images?.[0]?.image_url || 
+           'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600'
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -140,59 +182,61 @@ const Products: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">
-            Our Products
-          </h1>
-          
-          {/* Search and Controls */}
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={filters.searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white"
-              />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Our Products
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Showing {filteredProducts.length} of {products.length} products
+              </p>
             </div>
             
             <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={filters.searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white text-sm"
+                />
+              </div>
+              
               <button
                 onClick={() => setIsFilterOpen(true)}
-                className="lg:hidden flex items-center px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-300 bg-white"
+                className="lg:hidden flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300 bg-white text-sm"
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filters
               </button>
               
-              <div className="flex border border-gray-300 rounded-xl overflow-hidden bg-white">
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden bg-white">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-3 ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} transition-colors duration-300`}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-gold-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} transition-colors duration-300`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-3 ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} transition-colors duration-300`}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-gold-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'} transition-colors duration-300`}
                 >
                   <List className="w-4 h-4" />
                 </button>
               </div>
             </div>
           </div>
-          
-          <div className="mt-4 text-sm text-gray-600">
-            Showing {filteredProducts.length} of {products.length} products
-          </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          {/* Desktop Filter Sidebar - Only show when mobile filter is closed */}
+          {/* Desktop Filter Sidebar */}
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-8">
               <FilterSidebar
@@ -204,7 +248,7 @@ const Products: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Filter Sidebar - Only show when explicitly opened */}
+          {/* Mobile Filter Sidebar */}
           {isFilterOpen && (
             <FilterSidebar
               filters={filters}
@@ -230,7 +274,7 @@ const Products: React.FC = () => {
                     priceRange: [0, 10000],
                     searchQuery: ''
                   })}
-                  className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-colors duration-300"
+                  className="px-6 py-3 bg-gold-600 hover:bg-gold-700 text-white rounded-xl transition-colors duration-300"
                 >
                   Clear Filters
                 </button>
@@ -242,13 +286,114 @@ const Products: React.FC = () => {
                   : 'grid-cols-1'
               }`}>
                 {filteredProducts.map((product, index) => (
-                  <div
+                  <motion.div
                     key={product.id}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className="group"
                   >
-                    <ProductCard product={product} />
-                  </div>
+                    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+                      {/* Product Image */}
+                      <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                        <img
+                          src={getPrimaryImage(product)}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        
+                        {/* Overlay Actions */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <div className="flex space-x-2">
+                            <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gold-50 transition-colors">
+                              <Heart className="w-4 h-4 text-gray-700" />
+                            </button>
+                            <button 
+                              onClick={() => handleAddToCart(product)}
+                              className="w-10 h-10 bg-gold-600 hover:bg-gold-700 rounded-full flex items-center justify-center shadow-lg transition-colors"
+                            >
+                              <ShoppingBag className="w-4 h-4 text-white" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Status Badges */}
+                        <div className="absolute top-3 left-3 flex flex-col space-y-2">
+                          {getDisplayStock(product) < 10 && getDisplayStock(product) > 0 && (
+                            <span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                              Only {getDisplayStock(product)} left
+                            </span>
+                          )}
+                          {getDisplayStock(product) === 0 && (
+                            <span className="bg-gray-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                              Out of Stock
+                            </span>
+                          )}
+                          {product.is_featured && (
+                            <span className="bg-gold-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Wishlist Button */}
+                        <button className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
+                          <Heart className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="p-4">
+                        {/* Brand and Category */}
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="text-xs font-medium text-gold-600 uppercase tracking-wide">
+                            {product.brand || 'In Style BD'}
+                          </span>
+                          <span className="text-xs text-gray-400">•</span>
+                          <span className="text-xs text-gray-500 capitalize">{product.category}</span>
+                        </div>
+
+                        {/* Product Name */}
+                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-gold-600 transition-colors duration-300">
+                          {product.name}
+                        </h3>
+
+                        {/* Rating */}
+                        <div className="flex items-center space-x-1 mb-3">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="w-3 h-3 text-gold-400 fill-current" />
+                          ))}
+                          <span className="text-xs text-gray-500 ml-1">(4.8)</span>
+                        </div>
+
+                        {/* Price and Add to Cart */}
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-lg font-bold text-gray-900">
+                              {formatPrice(getDisplayPrice(product))}
+                            </span>
+                            {product.variants && product.variants.length > 1 && (
+                              <div className="text-xs text-gray-500">
+                                {product.variants.length} variants
+                              </div>
+                            )}
+                          </div>
+                          
+                          <button
+                            onClick={() => handleAddToCart(product)}
+                            disabled={getDisplayStock(product) === 0}
+                            className={`px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
+                              getDisplayStock(product) === 0 
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                : 'bg-gold-600 hover:bg-gold-700 text-white shadow-md hover:shadow-lg'
+                            }`}
+                          >
+                            {getDisplayStock(product) === 0 ? 'Out of Stock' : 'Add to Cart'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             )}

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ShoppingBag, Heart, Share2, Star, Truck, Shield, RotateCcw, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, Heart, Share2, Star, Truck, Shield, RotateCcw, Plus, Minus, MessageCircle, Eye } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Product, ProductVariant } from '../types'
 import { useCart } from '../contexts/CartContext'
 import Button from '../components/ui/Button'
-import Card from '../components/ui/Card'
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -19,10 +18,12 @@ const ProductDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details')
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
 
   useEffect(() => {
     if (id) {
       fetchProduct()
+      fetchRelatedProducts()
     }
   }, [id])
 
@@ -68,6 +69,29 @@ const ProductDetail: React.FC = () => {
     }
   }
 
+  const fetchRelatedProducts = async () => {
+    try {
+      const { data: productsData, error } = await supabase
+        .from('products')
+        .select('*, product_variants(*), product_images(*)')
+        .eq('status', 'active')
+        .neq('id', id)
+        .limit(4)
+
+      if (error) throw error
+
+      const productsWithDetails = productsData.map(product => ({
+        ...product,
+        variants: product.product_variants,
+        images: product.product_images
+      }))
+
+      setRelatedProducts(productsWithDetails || [])
+    } catch (error) {
+      console.error('Error fetching related products:', error)
+    }
+  }
+
   const handleAddToCart = () => {
     if (product) {
       for (let i = 0; i < quantity; i++) {
@@ -92,7 +116,7 @@ const ProductDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -104,20 +128,20 @@ const ProductDetail: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-50 to-white flex items-center justify-center">
-        <Card className="p-8 text-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h2>
           <Button onClick={() => navigate('/products')}>
             Back to Products
           </Button>
-        </Card>
+        </div>
       </div>
     )
   }
 
   const images = product.images && product.images.length > 0 
     ? product.images 
-    : [{ image_url: product.image_url, alt_text: product.name }]
+    : [{ image_url: 'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600', alt_text: product.name }]
 
   const reviews = [
     { id: 1, name: 'Sarah K.', rating: 5, comment: 'Excellent quality! Fits perfectly and the material is amazing.', verified: true, days: 2 },
@@ -129,52 +153,45 @@ const ProductDetail: React.FC = () => {
   const totalReviews = 47
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center space-x-2 text-sm text-gray-600 mb-8"
-        >
-          <button
-            onClick={() => navigate('/products')}
-            className="hover:text-gold-600 transition-colors flex items-center"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Products
-          </button>
-          <span>/</span>
-          <span className="text-gray-900">{product.name}</span>
-        </motion.div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <button
+              onClick={() => navigate('/products')}
+              className="hover:text-gold-600 transition-colors flex items-center"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Products
+            </button>
+            <span>/</span>
+            <span className="text-gray-900">{product.name}</span>
+          </div>
+        </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-4"
-          >
-            <Card className="overflow-hidden">
-              <div className="aspect-square bg-gradient-to-br from-gold-50 to-gold-100">
-                <img
-                  src={images[selectedImageIndex]?.image_url}
-                  alt={images[selectedImageIndex]?.alt_text || product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </Card>
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="aspect-square bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
+              <img
+                src={images[selectedImageIndex]?.image_url}
+                alt={images[selectedImageIndex]?.alt_text || product.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
             
+            {/* Thumbnail Images */}
             {images.length > 1 && (
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 overflow-x-auto">
                 {images.map((image, index) => (
-                  <motion.button
+                  <button
                     key={index}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                    className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
                       selectedImageIndex === index ? 'border-gold-500 shadow-lg' : 'border-gray-200 hover:border-gold-300'
                     }`}
                   >
@@ -183,32 +200,27 @@ const ProductDetail: React.FC = () => {
                       alt={image.alt_text || `${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Product Information */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6">
             {/* Brand and Category */}
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">IS</span>
-              </div>
-              <span className="text-sm font-medium text-gray-900">In Style BD</span>
-              <span className="text-sm text-gray-500">• {product.category}</span>
+              <span className="text-sm font-medium text-gold-600 uppercase tracking-wide">
+                {product.brand || 'In Style BD'}
+              </span>
+              <span className="text-sm text-gray-400">•</span>
+              <span className="text-sm text-gray-500 capitalize">{product.category}</span>
             </div>
 
             {/* Product Name */}
-            <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
 
-            {/* Rating */}
+            {/* Rating and Reviews */}
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
@@ -223,22 +235,25 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Price */}
-            <div className="text-4xl font-bold bg-gradient-to-r from-gold-600 to-gold-700 bg-clip-text text-transparent">
+            <div className="text-3xl font-bold text-gray-900">
               {formatPrice(selectedVariant?.price || product.base_price || 0)}
             </div>
 
+            {/* Description */}
+            <p className="text-gray-600 leading-relaxed">
+              {product.description}
+            </p>
+
             {/* Variant Selection */}
             {product.variants && product.variants.length > 1 && (
-              <Card className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">
                   Select Variant
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {product.variants.map(variant => (
-                    <motion.button
+                    <button
                       key={variant.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedVariant(variant)}
                       className={`p-4 border-2 rounded-xl text-left transition-all ${
                         selectedVariant?.id === variant.id
@@ -252,34 +267,30 @@ const ProductDetail: React.FC = () => {
                       <div className="text-sm text-gray-600">
                         {formatPrice(variant.price)} • {variant.stock} in stock
                       </div>
-                    </motion.button>
+                    </button>
                   ))}
                 </div>
-              </Card>
+              </div>
             )}
 
             {/* Quantity and Add to Cart */}
-            <Card className="p-6">
-              <div className="flex items-center space-x-6 mb-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-6">
                 <span className="text-lg font-medium text-gray-900">Quantity:</span>
-                <div className="flex items-center border-2 border-gold-200 rounded-xl">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                <div className="flex items-center border-2 border-gray-200 rounded-xl">
+                  <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-3 hover:bg-gold-50 transition-colors"
+                    className="p-3 hover:bg-gray-50 transition-colors"
                   >
                     <Minus className="w-4 h-4" />
-                  </motion.button>
-                  <span className="px-6 py-3 border-x-2 border-gold-200 min-w-[80px] text-center font-medium">{quantity}</span>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                  </button>
+                  <span className="px-6 py-3 border-x-2 border-gray-200 min-w-[80px] text-center font-medium">{quantity}</span>
+                  <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-3 hover:bg-gold-50 transition-colors"
+                    className="p-3 hover:bg-gray-50 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                  </motion.button>
+                  </button>
                 </div>
                 <span className="text-gray-500">
                   {selectedVariant?.stock || 0} available
@@ -304,41 +315,97 @@ const ProductDetail: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center text-sm text-gray-600 mt-4">
-                <Truck className="w-4 h-4 mr-2 text-gold-500" />
-                Free delivery on orders over ৳2000
+              {/* Action Buttons */}
+              <div className="flex space-x-4 pt-4">
+                <button className="flex items-center space-x-2 text-gray-600 hover:text-gold-600 transition-colors">
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-sm">Chat</span>
+                </button>
+                <button className="flex items-center space-x-2 text-gray-600 hover:text-gold-600 transition-colors">
+                  <Heart className="w-4 h-4" />
+                  <span className="text-sm">Wishlist</span>
+                </button>
+                <button className="flex items-center space-x-2 text-gray-600 hover:text-gold-600 transition-colors">
+                  <Share2 className="w-4 h-4" />
+                  <span className="text-sm">Share</span>
+                </button>
               </div>
-            </Card>
+            </div>
 
             {/* Features */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
               {[
-                { icon: Truck, title: "Free Shipping", subtitle: "On orders over ৳2000" },
+                { icon: Truck, title: "Free Delivery", subtitle: "On orders over ৳2000" },
                 { icon: Shield, title: "Secure Payment", subtitle: "100% secure checkout" },
                 { icon: RotateCcw, title: "Easy Returns", subtitle: "7-day return policy" }
               ].map((feature, index) => {
                 const IconComponent = feature.icon
                 return (
-                  <Card key={index} className="p-4 text-center">
+                  <div key={index} className="text-center">
                     <IconComponent className="w-6 h-6 text-gold-500 mx-auto mb-2" />
                     <div className="text-xs font-medium text-gray-900">{feature.title}</div>
                     <div className="text-xs text-gray-500">{feature.subtitle}</div>
-                  </Card>
+                  </div>
                 )
               })}
             </div>
-          </motion.div>
+          </div>
         </div>
 
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-20">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">You might also like</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct) => {
+                const primaryImage = relatedProduct.images?.find(img => img.is_primary)?.image_url || 
+                                   relatedProduct.images?.[0]?.image_url || 
+                                   'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600'
+                const defaultVariant = relatedProduct.variants?.find(v => v.is_default) || relatedProduct.variants?.[0]
+                const price = defaultVariant?.price || relatedProduct.base_price
+
+                return (
+                  <motion.div
+                    key={relatedProduct.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="group cursor-pointer"
+                    onClick={() => navigate(`/product/${relatedProduct.id}`)}
+                  >
+                    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+                      <div className="aspect-square bg-gray-100 overflow-hidden">
+                        <img
+                          src={primaryImage}
+                          alt={relatedProduct.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                          {relatedProduct.name}
+                        </h3>
+                        <div className="flex items-center space-x-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="w-3 h-3 text-gold-400 fill-current" />
+                          ))}
+                          <span className="text-xs text-gray-500 ml-1">(4.8)</span>
+                        </div>
+                        <div className="text-lg font-bold text-gray-900">
+                          {formatPrice(price)}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Tabs Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-20"
-        >
-          <Card className="overflow-hidden">
-            <div className="border-b border-gold-100">
+        <div className="mt-20">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="border-b border-gray-200">
               <nav className="flex">
                 {(['details', 'reviews'] as const).map((tab) => (
                   <button
@@ -410,7 +477,7 @@ const ProductDetail: React.FC = () => {
 
                   <div className="space-y-6">
                     {reviews.map((review) => (
-                      <Card key={review.id} className="p-6">
+                      <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full flex items-center justify-center">
@@ -438,14 +505,14 @@ const ProductDetail: React.FC = () => {
                         </div>
                         
                         <p className="text-gray-600 leading-relaxed">{review.comment}</p>
-                      </Card>
+                      </div>
                     ))}
                   </div>
                 </motion.div>
               )}
             </div>
-          </Card>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   )
