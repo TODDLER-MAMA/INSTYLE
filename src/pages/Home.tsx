@@ -386,7 +386,16 @@ const Home: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                className="relative"
               >
+                <GlowingEffect
+                  disabled={false}
+                  proximity={100}
+                  spread={40}
+                  movementDuration={1.2}
+                  borderWidth={3}
+                  className="rounded-3xl"
+                />
                 <Link to={category.href} className="group block">
                   <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
                     {/* Background with gradient overlay */}
@@ -619,29 +628,39 @@ const Home: React.FC = () => {
                   viewport={{ once: true }}
                   className="relative group"
                 >
-                  <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gold-100 overflow-hidden">
-                    <div className="relative z-10">
-                      <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <IconComponent className="w-8 h-8 text-white" />
-                      </div>
-                      
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                      <p className="text-gray-600 leading-relaxed mb-6">{service.description}</p>
-                      
-                      <div className="w-full h-32 rounded-lg overflow-hidden">
-                        <TiltedCard
-                          imageSrc={service.image}
-                          altText={service.title}
-                          captionText={service.title}
-                          containerHeight="128px"
-                          containerWidth="100%"
-                          imageHeight="128px"
-                          imageWidth="100%"
-                          scaleOnHover={1.05}
-                          rotateAmplitude={8}
-                          showTooltip={false}
-                          className="w-full h-full"
-                        />
+                  <div className="relative">
+                    <GlowingEffect
+                      disabled={false}
+                      proximity={80}
+                      spread={35}
+                      movementDuration={1.8}
+                      borderWidth={2}
+                      className="rounded-2xl"
+                    />
+                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gold-100 overflow-hidden">
+                      <div className="relative z-10">
+                        <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                          <IconComponent className="w-8 h-8 text-white" />
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
+                        <p className="text-gray-600 leading-relaxed mb-6">{service.description}</p>
+                        
+                        <div className="w-full h-32 rounded-lg overflow-hidden">
+                          <TiltedCard
+                            imageSrc={service.image}
+                            altText={service.title}
+                            captionText={service.title}
+                            containerHeight="128px"
+                            containerWidth="100%"
+                            imageHeight="128px"
+                            imageWidth="100%"
+                            scaleOnHover={1.08}
+                            rotateAmplitude={12}
+                            showTooltip={false}
+                            className="w-full h-full"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -693,8 +712,8 @@ const Home: React.FC = () => {
                     containerWidth="100%"
                     imageHeight="300px"
                     imageWidth="100%"
-                    scaleOnHover={1.05}
-                    rotateAmplitude={8}
+                    scaleOnHover={1.08}
+                    rotateAmplitude={12}
                     showTooltip={false}
                     className="mx-auto"
                     displayOverlayContent={true}
@@ -707,18 +726,28 @@ const Home: React.FC = () => {
                   />
                 </div>
                 
-                <div className="bg-white rounded-2xl p-6 shadow-lg">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">{facility.title}</h3>
-                  <p className="text-gray-600 mb-6">{facility.description}</p>
-                  
-                  <ul className="space-y-3">
-                    {facility.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center text-sm text-gray-700">
-                        <CheckCircle className="w-4 h-4 text-gold-500 mr-3 flex-shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="relative">
+                  <GlowingEffect
+                    disabled={false}
+                    proximity={60}
+                    spread={25}
+                    movementDuration={2}
+                    borderWidth={1}
+                    className="rounded-2xl"
+                  />
+                  <div className="bg-white rounded-2xl p-6 shadow-lg">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">{facility.title}</h3>
+                    <p className="text-gray-600 mb-6">{facility.description}</p>
+                    
+                    <ul className="space-y-3">
+                      {facility.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-center text-sm text-gray-700">
+                          <CheckCircle className="w-4 h-4 text-gold-500 mr-3 flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -776,19 +805,30 @@ const Home: React.FC = () => {
                   viewport={{ once: true }}
                   className="relative group"
                 >
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-gold-500/20 hover:border-gold-500/40 transition-all duration-300">
-                    <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                      <IconComponent className="w-8 h-8 text-white" />
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-4">{contact.title}</h3>
-                    
-                    <div className="space-y-2">
-                      {contact.details.map((detail, detailIndex) => (
-                        <p key={detailIndex} className="text-gray-300 text-sm">
-                          {detail}
-                        </p>
-                      ))}
+                  <div className="relative">
+                    <GlowingEffect
+                      disabled={false}
+                      proximity={70}
+                      spread={30}
+                      movementDuration={1.5}
+                      borderWidth={2}
+                      variant="white"
+                      className="rounded-2xl"
+                    />
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-gold-500/20 hover:border-gold-500/40 transition-all duration-300">
+                      <div className="w-16 h-16 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <IconComponent className="w-8 h-8 text-white" />
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-white mb-4">{contact.title}</h3>
+                      
+                      <div className="space-y-2">
+                        {contact.details.map((detail, detailIndex) => (
+                          <p key={detailIndex} className="text-gray-300 text-sm">
+                            {detail}
+                          </p>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -832,14 +872,24 @@ const Home: React.FC = () => {
                   viewport={{ once: true }}
                   className="text-center"
                 >
-                  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-xl mb-4`}>
-                      <IconComponent className="w-6 h-6 text-white" />
+                  <div className="relative">
+                    <GlowingEffect
+                      disabled={false}
+                      proximity={60}
+                      spread={20}
+                      movementDuration={2.5}
+                      borderWidth={1}
+                      className="rounded-2xl"
+                    />
+                    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-xl mb-4`}>
+                        <IconComponent className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">{feature.title}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {feature.description}
+                      </p>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
                   </div>
                 </motion.div>
               )

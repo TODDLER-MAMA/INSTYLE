@@ -20,9 +20,9 @@ interface TiltedCardProps {
 }
 
 const springValues: SpringOptions = {
-  damping: 30,
-  stiffness: 100,
-  mass: 2,
+  damping: 20,
+  stiffness: 150,
+  mass: 1.5,
 };
 
 export default function TiltedCard({
@@ -33,8 +33,8 @@ export default function TiltedCard({
   containerWidth = "100%",
   imageHeight = "300px",
   imageWidth = "300px",
-  scaleOnHover = 1.1,
-  rotateAmplitude = 14,
+  scaleOnHover = 1.15,
+  rotateAmplitude = 20,
   showMobileWarning = false,
   showTooltip = true,
   overlayContent = null,
@@ -50,9 +50,9 @@ export default function TiltedCard({
   const scale = useSpring(1, springValues);
   const opacity = useSpring(0);
   const rotateFigcaption = useSpring(0, {
-    stiffness: 350,
-    damping: 30,
-    mass: 1,
+    stiffness: 400,
+    damping: 25,
+    mass: 0.8,
   });
 
   const [lastY, setLastY] = useState<number>(0);
@@ -74,7 +74,7 @@ export default function TiltedCard({
     y.set(e.clientY - rect.top);
 
     const velocityY = offsetY - lastY;
-    rotateFigcaption.set(-velocityY * 0.6);
+    rotateFigcaption.set(-velocityY * 0.8);
     setLastY(offsetY);
   }
 
