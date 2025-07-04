@@ -790,7 +790,7 @@ const Home: React.FC = () => {
               {
                 icon: Mail,
                 title: "Email Us",
-                details: ["info@instylebd.com", "support@instylebd.com", "Quick response guaranteed"]
+                details: ["instylebd86@gmail.com", "Quick response guaranteed"]
               }
             ].map((contact, index) => {
               const IconComponent = contact.icon
