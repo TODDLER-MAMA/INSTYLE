@@ -25,14 +25,25 @@ const Admin: React.FC = () => {
   const fetchData = async () => {
     try {
       const [productsRes, ordersRes] = await Promise.all([
-        supabase.from('products').select('*').order('created_at', { ascending: false }),
+        supabase.from('products').select(`
+          *,
+          variants:product_variants(*),
+          images:product_images(*)
+        `).order('created_at', { ascending: false }),
         supabase.from('orders').select('*').order('created_at', { ascending: false })
       ])
 
       if (productsRes.error) throw productsRes.error
       if (ordersRes.error) throw ordersRes.error
 
-      setProducts(productsRes.data || [])
+      // Transform the data to match our Product type
+      const transformedProducts = productsRes.data?.map(product => ({
+        ...product,
+        variants: product.variants || [],
+        images: product.images || []
+      })) || []
+
+      setProducts(transformedProducts)
       setOrders(ordersRes.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -46,7 +57,7 @@ const Admin: React.FC = () => {
     try {
       if (editingProduct) {
         // Update existing product
-        const { error } = await supabase
+        const { error: productError } = await supabase
           .from('products')
           .update({
             name: productData.name,
@@ -62,7 +73,58 @@ const Admin: React.FC = () => {
           })
           .eq('id', editingProduct.id)
 
-        if (error) throw error
+        if (productError) throw productError
+
+        // Handle image updates
+        if (productData.existingImages) {
+          // Remove images that are no longer in existingImages
+          const existingImageIds = productData.existingImages.map((img: any) => img.id)
+          const currentImageIds = editingProduct.images?.map(img => img.id) || []
+          const imagesToDelete = currentImageIds.filter(id => !existingImageIds.includes(id))
+          
+          if (imagesToDelete.length > 0) {
+            await supabase
+              .from('product_images')
+              .delete()
+              .in('id', imagesToDelete)
+          }
+        }
+
+        // Add new images
+        if (productData.images && productData.images.length > 0) {
+          // For demo purposes, we'll use placeholder URLs
+          // In a real app, you'd upload to storage first
+          const imageInserts = productData.images.map((file: File, index: number) => ({
+            product_id: editingProduct.id,
+            image_url: `https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600`,
+            alt_text: `${productData.name} - Image ${index + 1}`,
+            display_order: index,
+            is_primary: index === 0 && (!productData.existingImages || productData.existingImages.length === 0)
+          }))
+
+          await supabase
+            .from('product_images')
+            .insert(imageInserts)
+        }
+
+        // Update variants
+        if (productData.variants && productData.variants.length > 0) {
+          // Delete existing variants
+          await supabase
+            .from('product_variants')
+            .delete()
+            .eq('product_id', editingProduct.id)
+
+          // Insert new variants
+          const variantsToInsert = productData.variants.map((variant: any) => ({
+            ...variant,
+            product_id: editingProduct.id
+          }))
+
+          await supabase
+            .from('product_variants')
+            .insert(variantsToInsert)
+        }
       } else {
         // Create new product
         const { data: newProduct, error: productError } = await supabase
@@ -90,11 +152,26 @@ const Admin: React.FC = () => {
             product_id: newProduct.id
           }))
 
-          const { error: variantsError } = await supabase
+          await supabase
             .from('product_variants')
             .insert(variantsToInsert)
+        }
 
-          if (variantsError) throw variantsError
+        // Insert images
+        if (productData.images && productData.images.length > 0) {
+          // For demo purposes, we'll use placeholder URLs
+          // In a real app, you'd upload to storage first
+          const imageInserts = productData.images.map((file: File, index: number) => ({
+            product_id: newProduct.id,
+            image_url: `https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600`,
+            alt_text: `${productData.name} - Image ${index + 1}`,
+            display_order: index,
+            is_primary: index === 0
+          }))
+
+          await supabase
+            .from('product_images')
+            .insert(imageInserts)
         }
       }
 
@@ -162,7 +239,10 @@ const Admin: React.FC = () => {
   const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0)
   const totalProducts = products.length
   const totalOrders = orders.length
-  const lowStockProducts = products.filter(p => (p.stock || 0) < 10).length
+  const lowStockProducts = products.filter(p => {
+    const totalStock = p.variants?.reduce((sum, variant) => sum + variant.stock, 0) || 0
+    return totalStock < 10
+  }).length
 
   const stats = [
     {
@@ -446,6 +526,9 @@ const Admin: React.FC = () => {
                         Price
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Stock
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Status
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -454,63 +537,78 @@ const Admin: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gold-100">
-                    {products.map((product) => (
-                      <tr key={product.id} className="hover:bg-gold-50/30 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="w-12 h-12 bg-gradient-to-br from-gold-100 to-gold-200 rounded-lg flex items-center justify-center">
-                              <Gem className="w-6 h-6 text-gold-600" />
+                    {products.map((product) => {
+                      const primaryImage = product.images?.find(img => img.is_primary)?.image_url || 
+                                         product.images?.[0]?.image_url
+                      const totalStock = product.variants?.reduce((sum, variant) => sum + variant.stock, 0) || 0
+                      const defaultVariant = product.variants?.find(v => v.is_default) || product.variants?.[0]
+                      const displayPrice = defaultVariant?.price || product.base_price
+
+                      return (
+                        <tr key={product.id} className="hover:bg-gold-50/30 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 bg-gradient-to-br from-gold-100 to-gold-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                {primaryImage ? (
+                                  <img src={primaryImage} alt={product.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <Gem className="w-6 h-6 text-gold-600" />
+                                )}
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                                <div className="text-sm text-gray-500">{product.brand}</div>
+                              </div>
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                              <div className="text-sm text-gray-500">{product.brand}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 capitalize">{product.category}</div>
-                          <div className="text-sm text-gray-500 capitalize">{product.subcategory}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {formatPrice(product.base_price)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                            product.status === 'active' ? 'bg-green-100 text-green-800' :
-                            product.status === 'inactive' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
-                            {product.status}
-                          </span>
-                          {product.is_featured && (
-                            <span className="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gold-100 text-gold-800">
-                              <Star className="w-3 h-3 mr-1" />
-                              Featured
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900 capitalize">{product.category}</div>
+                            <div className="text-sm text-gray-500 capitalize">{product.subcategory}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {formatPrice(displayPrice)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {totalStock}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                              product.status === 'active' ? 'bg-green-100 text-green-800' :
+                              product.status === 'inactive' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {product.status}
                             </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <motion.button 
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => setEditingProduct(product)}
-                              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </motion.button>
-                            <motion.button 
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => handleDeleteProduct(product.id)}
-                              className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </motion.button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                            {product.is_featured && (
+                              <span className="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gold-100 text-gold-800">
+                                <Star className="w-3 h-3 mr-1" />
+                                Featured
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <motion.button 
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setEditingProduct(product)}
+                                className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </motion.button>
+                              <motion.button 
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => handleDeleteProduct(product.id)}
+                                className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </motion.button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

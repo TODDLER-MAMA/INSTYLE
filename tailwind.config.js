@@ -25,6 +25,7 @@ export default {
         'slide-up': 'slideUp 0.5s ease-out',
         'float': 'float 6s ease-in-out infinite',
         'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
+        'scroll': 'scroll 20s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -42,6 +43,10 @@ export default {
         pulseSoft: {
           '0%, 100%': { opacity: '0.8' },
           '50%': { opacity: '1' },
+        },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' },
         },
       },
       backdropBlur: {
