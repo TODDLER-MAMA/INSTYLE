@@ -9,7 +9,6 @@ import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import TextPressure from '../components/TextPressure'
 import ScrollReveal from '../components/ScrollReveal'
-import ScrollVelocity from '../components/ScrollVelocity'
 import { GlowingEffect } from '../components/ui/GlowingEffect'
 import TiltedCard from '../components/ui/TiltedCard'
 import SpotlightCard from '../components/ui/SpotlightCard'
@@ -103,9 +102,8 @@ const Home: React.FC = () => {
     }
   ]
 
-  // Brand names for the scroll velocity animation - Only 2 lines
-  const luxuryBrandsLine1 = ['CHANEL', 'DIOR', 'GUCCI', 'PRADA', 'VERSACE', 'ARMANI']
-  const luxuryBrandsLine2 = ['VALENTINO', 'BALENCIAGA', 'HERMÈS', 'CARTIER', 'TIFFANY', 'BULGARI']
+  // Premium brands for Bangladesh fashion market
+  const premiumBrands = ['AARONG', 'KAY KRAFT', 'YELLOW', 'ECSTASY', 'RICHMAN', 'SAILOR']
 
   const services = [
     {
@@ -377,13 +375,13 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories Section - Enhanced with 3D Card Effect */}
-      <section className="relative py-20 bg-gradient-to-br from-white via-gold-50/30 to-gold-100/50">
+      {/* Categories Section - Redesigned and Compact */}
+      <section className="relative py-16 bg-gradient-to-br from-white via-gold-50/30 to-gold-100/50">
         {/* Gradient transition from previous section */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-50/30 via-white/60 to-transparent"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -393,16 +391,16 @@ const Home: React.FC = () => {
               <span className="inline-block text-sm font-medium text-gold-600 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-100 rounded-full">
                 Our Collections
               </span>
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
                 Shop by Category
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Explore our carefully curated collections designed to enhance your natural beauty and style.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categories.map((category, index) => (
               <motion.div
                 key={category.name}
@@ -412,89 +410,56 @@ const Home: React.FC = () => {
                 viewport={{ once: true }}
                 className="group"
               >
-                <CardContainer className="inter-var py-0">
-                  <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-gold-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-3xl p-0 border shadow-lg">
-                    <Link to={category.href} className="block">
-                      {/* Background Image with 3D Effect */}
-                      <CardItem translateZ="100" className="w-full">
-                        <div className="relative h-80 overflow-hidden rounded-t-3xl">
-                          <img
-                            src={category.image}
-                            alt={category.name}
-                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700"
-                          />
-                          
-                          {/* Gradient Overlay */}
-                          <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80`}></div>
-                          
-                          {/* Floating Icon with 3D Effect */}
-                          <CardItem
-                            translateZ="150"
-                            className="absolute top-6 right-6"
-                          >
-                            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl group-hover/card:scale-110 transition-transform duration-300">
-                              {category.icon}
-                            </div>
-                          </CardItem>
+                <Link to={category.href} className="block">
+                  <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden group-hover:-translate-y-2">
+                    {/* Background Image */}
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      
+                      {/* Gradient Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-t ${category.gradient} opacity-80`}></div>
+                      
+                      {/* Floating Icon */}
+                      <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                        {category.icon}
+                      </div>
 
-                          {/* Item Count Badge with 3D Effect */}
-                          <CardItem
-                            translateZ="120"
-                            className="absolute top-6 left-6"
-                          >
-                            <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-full">
-                              {category.count}
-                            </span>
-                          </CardItem>
+                      {/* Item Count Badge */}
+                      <div className="absolute top-4 left-4">
+                        <span className="text-xs font-medium bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full">
+                          {category.count}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div className={`relative bg-gradient-to-br ${category.bgGradient} p-6`}>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-xl font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
+                            {category.name}
+                          </h3>
+                          <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-gold-600 group-hover:translate-x-2 transition-all duration-300" />
                         </div>
-                      </CardItem>
-
-                      {/* Content Section with 3D Effects */}
-                      <div className={`relative bg-gradient-to-br ${category.bgGradient} p-8 rounded-b-3xl`}>
-                        {/* Decorative Element */}
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold-400 to-gold-600"></div>
                         
-                        <div className="space-y-4">
-                          <CardItem
-                            translateZ="50"
-                            className="flex items-center justify-between"
-                          >
-                            <h3 className="text-2xl font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
-                              {category.name}
-                            </h3>
-                            <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-gold-600 group-hover:translate-x-2 transition-all duration-300" />
-                          </CardItem>
-                          
-                          <CardItem
-                            translateZ="60"
-                            as="p"
-                            className="text-gray-600 leading-relaxed"
-                          >
-                            {category.description}
-                          </CardItem>
-                          
-                          {/* Action Button with 3D Effect */}
-                          <CardItem
-                            translateZ="80"
-                            className="pt-4"
-                          >
-                            <div className="inline-flex items-center text-gold-600 font-semibold group-hover:text-gold-700 transition-colors duration-300">
-                              <span className="mr-2">Explore Collection</span>
-                              <div className="w-8 h-8 bg-gold-100 group-hover:bg-gold-200 rounded-full flex items-center justify-center transition-colors duration-300">
-                                <ArrowRight className="w-4 h-4" />
-                              </div>
-                            </div>
-                          </CardItem>
-                        </div>
-
-                        {/* Decorative Pattern */}
-                        <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10">
-                          <div className="w-full h-full bg-gradient-to-tl from-gold-400 to-transparent rounded-tl-full"></div>
+                        <p className="text-gray-600 text-sm leading-relaxed">
+                          {category.description}
+                        </p>
+                        
+                        <div className="inline-flex items-center text-gold-600 font-semibold group-hover:text-gold-700 transition-colors duration-300 text-sm">
+                          <span className="mr-2">Explore Collection</span>
+                          <div className="w-6 h-6 bg-gold-100 group-hover:bg-gold-200 rounded-full flex items-center justify-center transition-colors duration-300">
+                            <ArrowRight className="w-3 h-3" />
+                          </div>
                         </div>
                       </div>
-                    </Link>
-                  </CardBody>
-                </CardContainer>
+                    </div>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -504,12 +469,12 @@ const Home: React.FC = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gray-800/10 to-gray-900/30"></div>
       </section>
 
-      {/* Single Horizontal Scroll - Premium Brands */}
-      <section className="relative py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 overflow-hidden">
+      {/* Premium Brands Section - Redesigned and Compact */}
+      <section className="relative py-12 bg-gradient-to-r from-gray-900 via-black to-gray-900 overflow-hidden">
         {/* Gradient transition from previous section */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-gold-100/20 via-gray-800/20 to-transparent"></div>
 
-        <div className="mb-16 text-center">
+        <div className="mb-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -517,42 +482,29 @@ const Home: React.FC = () => {
             viewport={{ once: true }}
           >
             <span className="inline-block text-sm font-medium text-gold-400 uppercase tracking-wide mb-4 px-4 py-2 bg-gold-900/20 rounded-full">
-              Luxury Collections
+              Premium Partners
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              Premium Brands We Carry
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Trusted Brands We Carry
             </h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Discover the world's most prestigious fashion and beauty brands in our carefully curated selection.
+            <p className="text-gray-300 max-w-xl mx-auto text-sm">
+              Discover premium fashion and beauty brands in our carefully curated selection.
             </p>
           </motion.div>
         </div>
 
-        {/* Only two horizontal scroll lines */}
-        <div className="space-y-8">
-          <ScrollVelocity
-            texts={luxuryBrandsLine1}
-            velocity={50}
-            className="text-6xl md:text-8xl font-bold text-gold-500/20 select-none tracking-wider"
-            parallaxClassName="py-4"
-            scrollerClassName="flex whitespace-nowrap"
-            parallaxStyle={{ 
-              borderTop: '1px solid rgba(212, 175, 55, 0.1)',
-              borderBottom: '1px solid rgba(212, 175, 55, 0.1)'
-            }}
-          />
-          
-          <ScrollVelocity
-            texts={luxuryBrandsLine2}
-            velocity={-40}
-            className="text-6xl md:text-8xl font-bold text-gold-500/15 select-none tracking-wider"
-            parallaxClassName="py-4"
-            scrollerClassName="flex whitespace-nowrap"
-            parallaxStyle={{ 
-              borderTop: '1px solid rgba(212, 175, 55, 0.1)',
-              borderBottom: '1px solid rgba(212, 175, 55, 0.1)'
-            }}
-          />
+        {/* Single horizontal scroll line */}
+        <div className="relative">
+          <div className="flex animate-scroll">
+            {[...premiumBrands, ...premiumBrands].map((brand, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 mx-8 text-3xl md:text-4xl font-bold text-gold-500/30 select-none tracking-wider"
+              >
+                {brand}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Gradient transition to next section */}
@@ -828,12 +780,12 @@ const Home: React.FC = () => {
               {
                 icon: MapPin,
                 title: "Visit Us",
-                details: ["Dhanmondi, Dhaka", "Bangladesh", "Open 10 AM - 10 PM"]
+                details: ["Shop 318, 3rd floor, Rakeen commercial complex", "Rakeen city, mirpur 13", "Open 10 AM - 10 PM"]
               },
               {
                 icon: Phone,
                 title: "Call Us",
-                details: ["+880 1234 567890", "+880 9876 543210", "Available 24/7"]
+                details: ["01842299333", "Customer Service & WhatsApp", "Available 24/7"]
               },
               {
                 icon: Mail,

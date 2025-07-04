@@ -26,6 +26,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
   const [variants, setVariants] = useState<Partial<ProductVariant>[]>([])
   const [images, setImages] = useState<File[]>([])
   const [imagePreview, setImagePreview] = useState<string[]>([])
+  const [existingImages, setExistingImages] = useState<ProductImage[]>([])
 
   useEffect(() => {
     if (product) {
@@ -52,6 +53,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
           is_default: true
         }])
       }
+
+      // Set existing images
+      if (product.images && product.images.length > 0) {
+        setExistingImages(product.images)
+      }
     } else {
       // Reset form for new product
       setFormData({
@@ -71,7 +77,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
         stock: 0,
         is_default: true
       }])
+      setExistingImages([])
     }
+    
+    // Reset new images
+    setImages([])
+    setImagePreview([])
   }, [product])
 
   const handleInputChange = (field: string, value: any) => {
@@ -92,7 +103,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    if (files.length + images.length > 5) {
+    const totalImages = existingImages.length + images.length + files.length
+    
+    if (totalImages > 5) {
       alert('Maximum 5 images allowed per product')
       return
     }
@@ -109,9 +122,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
     })
   }
 
-  const removeImage = (index: number) => {
+  const removeNewImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index))
     setImagePreview(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index))
   }
 
   const addVariant = () => {
@@ -152,7 +169,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
       return
     }
 
-    if (images.length === 0 && !product) {
+    if (existingImages.length === 0 && images.length === 0) {
       alert('At least one image is required')
       return
     }
@@ -163,7 +180,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
         ...variant,
         variant_name: variant.variant_name || `${variant.color || ''} ${variant.size || ''}`.trim() || 'Default'
       })),
-      images
+      images,
+      existingImages
     }
 
     await onSubmit(productData)
@@ -319,6 +337,38 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Product Images * (Max 5 images)
               </label>
+              
+              {/* Existing Images */}
+              {existingImages.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Current Images</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {existingImages.map((image, index) => (
+                      <div key={image.id} className="relative">
+                        <img
+                          src={image.image_url}
+                          alt={image.alt_text || `Product image ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingImage(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                        {image.is_primary && (
+                          <span className="absolute bottom-1 left-1 bg-green-500 text-white text-xs px-1 rounded">
+                            Primary
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* New Image Upload */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                 <input
                   type="file"
@@ -327,37 +377,41 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onClose, i
                   onChange={handleImageChange}
                   className="hidden"
                   id="image-upload"
-                  disabled={images.length >= 5}
+                  disabled={existingImages.length + images.length >= 5}
                 />
                 <label
                   htmlFor="image-upload"
                   className={`cursor-pointer flex flex-col items-center justify-center py-4 ${
-                    images.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''
+                    existingImages.length + images.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
                   <Upload className="w-8 h-8 text-gray-400 mb-2" />
                   <span className="text-sm text-gray-600">
-                    {images.length >= 5 ? 'Maximum images reached' : 'Click to upload images'}
+                    {existingImages.length + images.length >= 5 ? 'Maximum images reached' : 'Click to upload new images'}
                   </span>
                 </label>
               </div>
 
+              {/* New Image Previews */}
               {imagePreview.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
                   {imagePreview.map((preview, index) => (
                     <div key={index} className="relative">
                       <img
                         src={preview}
-                        alt={`Preview ${index + 1}`}
+                        alt={`New image ${index + 1}`}
                         className="w-full h-24 object-cover rounded-lg"
                       />
                       <button
                         type="button"
-                        onClick={() => removeImage(index)}
+                        onClick={() => removeNewImage(index)}
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                       >
                         <X className="w-3 h-3" />
                       </button>
+                      <span className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">
+                        New
+                      </span>
                     </div>
                   ))}
                 </div>

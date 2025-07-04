@@ -82,7 +82,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
+      if (event === 'SIGNED_OUT' || !session?.user) {
+        dispatch({ type: 'SET_UNAUTHENTICATED' })
+      } else if (session?.user) {
         const isAdmin = checkAdminStatus(session.user)
         if (isAdmin) {
           dispatch({ type: 'SET_AUTHENTICATED', payload: { user: session.user, isAdmin } })
@@ -91,13 +93,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           await supabase.auth.signOut()
           dispatch({ type: 'SET_UNAUTHENTICATED' })
         }
-      } else {
-        dispatch({ type: 'SET_UNAUTHENTICATED' })
       }
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  // Auto-logout when user navigates away from admin panel
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && state.isAuthenticated) {
+        // User switched tabs/minimized window, logout after 5 minutes
+        setTimeout(async () => {
+          if (document.hidden && state.isAuthenticated) {
+            await logout()
+          }
+        }, 5 * 60 * 1000) // 5 minutes
+      }
+    }
+
+    const handleBeforeUnload = () => {
+      if (state.isAuthenticated) {
+        // User is closing/refreshing the page, logout
+        supabase.auth.signOut()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [state.isAuthenticated])
 
   const login = async (email: string, password: string) => {
     dispatch({ type: 'SET_LOADING', payload: true })
@@ -146,6 +175,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       dispatch({ type: 'SET_UNAUTHENTICATED' })
     } catch (error) {
       console.error('Logout error:', error)
+      // Force logout even if there's an error
+      dispatch({ type: 'SET_UNAUTHENTICATED' })
     }
   }
 

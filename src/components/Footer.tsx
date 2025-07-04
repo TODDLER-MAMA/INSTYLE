@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart } from 'lucide-react'
+import { Facebook, Instagram, MessageCircle, Mail, Phone, MapPin, Heart, Truck, Shield, RotateCcw, Headphones } from 'lucide-react'
 
 const Footer: React.FC = () => {
   return (
@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Brand Section */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-1 space-y-6">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-lg">IS</span>
@@ -22,26 +22,39 @@ const Footer: React.FC = () => {
                 <span className="text-2xl font-bold text-white">In Style BD</span>
               </div>
               
-              <p className="text-gray-300 text-sm leading-relaxed max-w-md">
+              <p className="text-gray-300 text-sm leading-relaxed">
                 Your premier destination for elegant dresses, exquisite jewelry, and premium beauty products in Bangladesh. We curate the finest collections to celebrate your unique style.
               </p>
               
               {/* Social Links */}
               <div className="flex space-x-4">
-                {[
-                  { icon: Facebook, href: '#', label: 'Facebook' },
-                  { icon: Instagram, href: '#', label: 'Instagram' },
-                  { icon: Twitter, href: '#', label: 'Twitter' }
-                ].map(({ icon: Icon, href, label }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    className="w-10 h-10 bg-white/10 hover:bg-gold-600 rounded-xl flex items-center justify-center transition-all duration-300 group"
-                    aria-label={label}
-                  >
-                    <Icon className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
-                  </a>
-                ))}
+                <a
+                  href="https://www.facebook.com/share/1GtksZSK3i/?mibextid=wwXIfr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/10 hover:bg-blue-600 rounded-xl flex items-center justify-center transition-all duration-300 group"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
+                </a>
+                <a
+                  href="https://www.instagram.com/instyle.934/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/10 hover:bg-pink-600 rounded-xl flex items-center justify-center transition-all duration-300 group"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
+                </a>
+                <a
+                  href="https://wa.me/8801842299333"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-white/10 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all duration-300 group"
+                  aria-label="WhatsApp"
+                >
+                  <MessageCircle className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors duration-300" />
+                </a>
               </div>
             </div>
 
@@ -51,8 +64,8 @@ const Footer: React.FC = () => {
               <ul className="space-y-3">
                 {[
                   { name: 'Home', href: '/' },
-                  { name: 'Products', href: '/products' },
                   { name: 'About Us', href: '/about' },
+                  { name: 'Products', href: '/products' },
                   { name: 'Contact', href: '/contact' }
                 ].map((link) => (
                   <li key={link.name}>
@@ -72,16 +85,61 @@ const Footer: React.FC = () => {
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-white">Contact Us</h3>
               <div className="space-y-4">
+                <div className="flex items-start space-x-3 group">
+                  <div className="w-8 h-8 bg-gold-600/20 rounded-lg flex items-center justify-center group-hover:bg-gold-600 transition-colors duration-300 flex-shrink-0 mt-0.5">
+                    <Phone className="w-4 h-4 text-gold-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <a href="tel:01842299333" className="text-gray-300 hover:text-gold-400 text-sm transition-colors duration-300">
+                      01842299333
+                    </a>
+                    <p className="text-gray-400 text-xs">Customer Service & WhatsApp</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3 group">
+                  <div className="w-8 h-8 bg-gold-600/20 rounded-lg flex items-center justify-center group-hover:bg-gold-600 transition-colors duration-300 flex-shrink-0 mt-0.5">
+                    <Mail className="w-4 h-4 text-gold-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <a href="mailto:info@instylebd.com" className="text-gray-300 hover:text-gold-400 text-sm transition-colors duration-300">
+                      info@instylebd.com
+                    </a>
+                    <p className="text-gray-400 text-xs">Email Support</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3 group">
+                  <div className="w-8 h-8 bg-gold-600/20 rounded-lg flex items-center justify-center group-hover:bg-gold-600 transition-colors duration-300 flex-shrink-0 mt-0.5">
+                    <MapPin className="w-4 h-4 text-gold-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <span className="text-gray-300 text-sm">
+                      Shop 318, 3rd floor, Rakeen commercial complex, Rakeen city, mirpur 13
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Services */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-white">Our Services</h3>
+              <div className="space-y-4">
                 {[
-                  { icon: Mail, text: 'info@instylebd.com' },
-                  { icon: Phone, text: '+880 1234 567890' },
-                  { icon: MapPin, text: 'Dhaka, Bangladesh' }
-                ].map(({ icon: Icon, text }, index) => (
-                  <div key={index} className="flex items-center space-x-3 group">
-                    <div className="w-8 h-8 bg-gold-600/20 rounded-lg flex items-center justify-center group-hover:bg-gold-600 transition-colors duration-300">
+                  { icon: Truck, text: 'Free Delivery (৳2000+)', subtext: 'Inside Dhaka ৳80, Outside ৳150' },
+                  { icon: Shield, text: 'Quality Guarantee', subtext: '100% authentic products' },
+                  { icon: RotateCcw, text: 'Easy Returns', subtext: '7-day return policy' },
+                  { icon: Headphones, text: '24/7 Support', subtext: 'Always here to help' }
+                ].map(({ icon: Icon, text, subtext }, index) => (
+                  <div key={index} className="flex items-start space-x-3 group">
+                    <div className="w-8 h-8 bg-gold-600/20 rounded-lg flex items-center justify-center group-hover:bg-gold-600 transition-colors duration-300 flex-shrink-0 mt-0.5">
                       <Icon className="w-4 h-4 text-gold-400 group-hover:text-white transition-colors duration-300" />
                     </div>
-                    <span className="text-gray-300 text-sm">{text}</span>
+                    <div>
+                      <span className="text-gray-300 text-sm font-medium">{text}</span>
+                      <p className="text-gray-400 text-xs">{subtext}</p>
+                    </div>
                   </div>
                 ))}
               </div>
