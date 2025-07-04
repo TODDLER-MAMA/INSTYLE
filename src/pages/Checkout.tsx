@@ -39,6 +39,11 @@ const Checkout: React.FC = () => {
     }).format(price)
   }
 
+  const calculateDeliveryCharge = () => {
+    const isDhaka = customerInfo.city.toLowerCase().includes('dhaka')
+    return isDhaka ? 80 : 150
+  }
+
   const validateForm = (): boolean => {
     const newErrors: Partial<CustomerInfo> = {}
     
@@ -70,6 +75,9 @@ const Checkout: React.FC = () => {
     setIsSubmitting(true)
 
     try {
+      const deliveryCharge = calculateDeliveryCharge()
+      const subtotal = state.total
+      const totalWithDelivery = subtotal + deliveryCharge
       const fullAddress = `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.postalCode}`
       
       const orderData = {
@@ -80,11 +88,13 @@ const Checkout: React.FC = () => {
         items: state.items.map(item => ({
           product_id: item.product.id,
           product_name: item.product.name,
-          product_price: item.product.price,
+          product_price: item.variant?.price || item.product.base_price || item.product.price || 0,
+          variant_id: item.variant?.id,
+          variant_name: item.variant?.variant_name,
           quantity: item.quantity,
-          subtotal: item.product.price * item.quantity
+          subtotal: (item.variant?.price || item.product.base_price || item.product.price || 0) * item.quantity
         })),
-        total_amount: state.total,
+        total_amount: totalWithDelivery,
         status: 'pending'
       }
 
@@ -96,18 +106,20 @@ const Checkout: React.FC = () => {
 
       if (error) throw error
 
-      // Update product stock
+      // Update product variant stock
       for (const item of state.items) {
-        const { error: stockError } = await supabase
-          .from('products')
-          .update({ 
-            stock: item.product.stock - item.quantity,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', item.product.id)
+        if (item.variant) {
+          const { error: stockError } = await supabase
+            .from('product_variants')
+            .update({ 
+              stock: item.variant.stock - item.quantity,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', item.variant.id)
 
-        if (stockError) {
-          console.error('Error updating stock:', stockError)
+          if (stockError) {
+            console.error('Error updating variant stock:', stockError)
+          }
         }
       }
 
@@ -177,6 +189,10 @@ const Checkout: React.FC = () => {
     )
   }
 
+  const deliveryCharge = calculateDeliveryCharge()
+  const subtotal = state.total
+  const totalWithDelivery = subtotal + deliveryCharge
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -235,7 +251,7 @@ const Checkout: React.FC = () => {
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent ${
                       errors.phone ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="+880 1234 567890"
+                    placeholder="01842299333"
                   />
                   {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                 </div>
@@ -314,38 +330,50 @@ const Checkout: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
             
             <div className="space-y-4 mb-6">
-              {state.items.map((item) => (
-                <div key={item.product.id} className="flex items-center space-x-4">
-                  <img
-                    src={item.product.image_url}
-                    alt={item.product.name}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{item.product.name}</h3>
-                    <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+              {state.items.map((item) => {
+                const displayPrice = item.variant?.price || item.product.base_price || item.product.price || 0
+                const primaryImage = item.product.images?.find(img => img.is_primary)?.image_url || 
+                                   item.product.images?.[0]?.image_url ||
+                                   'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600'
+                
+                return (
+                  <div key={`${item.product.id}-${item.variant?.id || 'default'}`} className="flex items-center space-x-4">
+                    <img
+                      src={primaryImage}
+                      alt={item.product.name}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">{item.product.name}</h3>
+                      {item.variant && (
+                        <p className="text-sm text-gray-600">{item.variant.variant_name}</p>
+                      )}
+                      <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">
+                        {formatPrice(displayPrice * item.quantity)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">
-                      {formatPrice(item.product.price * item.quantity)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal ({state.itemCount} items)</span>
-                <span className="font-medium">{formatPrice(state.total)}</span>
+                <span className="font-medium">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className="font-medium text-green-600">Free</span>
+                <span className="text-gray-600">
+                  Delivery ({customerInfo.city.toLowerCase().includes('dhaka') ? 'Inside Dhaka' : 'Outside Dhaka'})
+                </span>
+                <span className="font-medium">{formatPrice(deliveryCharge)}</span>
               </div>
               <div className="flex justify-between text-lg font-semibold pt-2 border-t border-gray-200">
                 <span>Total</span>
-                <span className="text-gold-600">{formatPrice(state.total)}</span>
+                <span className="text-gold-600">{formatPrice(totalWithDelivery)}</span>
               </div>
             </div>
 
@@ -354,6 +382,11 @@ const Checkout: React.FC = () => {
                 <strong>Payment:</strong> Cash on Delivery (COD) available. 
                 You can pay when your order is delivered to your doorstep.
               </p>
+              <div className="mt-2 text-xs text-gold-700">
+                <p>• Inside Dhaka: ৳80 delivery charge</p>
+                <p>• Outside Dhaka: ৳150 delivery charge</p>
+                <p>• Free delivery on orders over ৳2000</p>
+              </div>
             </div>
           </div>
         </div>

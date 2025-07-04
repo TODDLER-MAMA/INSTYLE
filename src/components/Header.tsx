@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ShoppingBag, Menu, X, User, Search } from 'lucide-react'
+import { ShoppingBag, Menu, X, User } from 'lucide-react'
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -12,8 +12,8 @@ const Header: React.FC = () => {
 
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'Products', href: '/products' },
     { name: 'About', href: '/about' },
+    { name: 'Products', href: '/products' },
     { name: 'Contact', href: '/contact' },
   ]
 
@@ -55,13 +55,6 @@ const Header: React.FC = () => {
 
           {/* Right Icons - Smaller */}
           <div className="flex items-center space-x-3">
-            <Link
-              to="/search"
-              className="p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
-            >
-              <Search className="w-4 h-4" />
-            </Link>
-            
             <Link
               to={authState.isAuthenticated ? "/admin" : "/admin/login"}
               className="p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
