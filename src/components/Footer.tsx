@@ -102,7 +102,7 @@ const Footer: React.FC = () => {
                     <Mail className="w-4 h-4 text-gold-400 group-hover:text-white transition-colors duration-300" />
                   </div>
                   <div>
-                    <a href="mailto:info@instylebd.com" className="text-gray-300 hover:text-gold-400 text-sm transition-colors duration-300">
+                    <a href="mailto:instylebd86@gmail.com" className="text-gray-300 hover:text-gold-400 text-sm transition-colors duration-300">
                       info@instylebd.com
                     </a>
                     <p className="text-gray-400 text-xs">Email Support</p>
