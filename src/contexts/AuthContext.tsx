@@ -99,19 +99,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => subscription.unsubscribe()
   }, [])
 
-  // Auto-logout when user navigates away from admin panel
+  // Auto-logout when user navigates away from admin panel or closes tab
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden && state.isAuthenticated) {
-        // User switched tabs/minimized window, logout after 5 minutes
-        setTimeout(async () => {
-          if (document.hidden && state.isAuthenticated) {
-            await logout()
-          }
-        }, 5 * 60 * 1000) // 5 minutes
-      }
-    }
-
     const handleBeforeUnload = () => {
       if (state.isAuthenticated) {
         // User is closing/refreshing the page, logout
@@ -119,12 +108,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+    const handleVisibilityChange = () => {
+      if (document.hidden && state.isAuthenticated) {
+        // User switched tabs/minimized window, logout after 30 seconds
+        setTimeout(async () => {
+          if (document.hidden && state.isAuthenticated) {
+            await logout()
+          }
+        }, 30 * 1000) // 30 seconds
+      }
+    }
+
+    // Auto-logout when user navigates away from admin routes
+    const handlePopState = () => {
+      if (state.isAuthenticated && !window.location.pathname.startsWith('/admin')) {
+        logout()
+      }
+    }
+
     window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('popstate', handlePopState)
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('popstate', handlePopState)
     }
   }, [state.isAuthenticated])
 

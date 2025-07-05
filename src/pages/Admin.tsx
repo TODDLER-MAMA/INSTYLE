@@ -24,27 +24,48 @@ const Admin: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const [productsRes, ordersRes] = await Promise.all([
-        supabase.from('products').select(`
-          *,
-          variants:product_variants(*),
-          images:product_images(*)
-        `).order('created_at', { ascending: false }),
-        supabase.from('orders').select('*').order('created_at', { ascending: false })
-      ])
+      // Fetch products first
+      const { data: productsData, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-      if (productsRes.error) throw productsRes.error
-      if (ordersRes.error) throw ordersRes.error
+      if (productsError) throw productsError
 
-      // Transform the data to match our Product type
-      const transformedProducts = productsRes.data?.map(product => ({
+      // Fetch all variants
+      const { data: variantsData, error: variantsError } = await supabase
+        .from('product_variants')
+        .select('*')
+        .order('is_default', { ascending: false })
+
+      if (variantsError) throw variantsError
+
+      // Fetch all images
+      const { data: imagesData, error: imagesError } = await supabase
+        .from('product_images')
+        .select('*')
+        .order('display_order')
+
+      if (imagesError) throw imagesError
+
+      // Combine data manually
+      const productsWithDetails = productsData?.map(product => ({
         ...product,
-        variants: product.variants || [],
-        images: product.images || []
+        variants: variantsData?.filter(variant => variant.product_id === product.id) || [],
+        images: imagesData?.filter(image => image.product_id === product.id) || []
       })) || []
 
-      setProducts(transformedProducts)
-      setOrders(ordersRes.data || [])
+      setProducts(productsWithDetails)
+
+      // Fetch orders
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (ordersError) throw ordersError
+      setOrders(ordersData || [])
+
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -52,9 +73,38 @@ const Admin: React.FC = () => {
     }
   }
 
+  const uploadImageToStorage = async (file: File, productId: string): Promise<string> => {
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${productId}/${Date.now()}.${fileExt}`
+      
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(fileName, file)
+
+      if (error) {
+        console.error('Storage upload error:', error)
+        // Fallback to placeholder if storage fails
+        return 'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600'
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(fileName)
+
+      return publicUrl
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      // Fallback to placeholder if upload fails
+      return 'https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600'
+    }
+  }
+
   const handleProductSubmit = async (productData: any) => {
     setIsSubmitting(true)
     try {
+      let productId = editingProduct?.id
+
       if (editingProduct) {
         // Update existing product
         const { error: productError } = await supabase
@@ -75,56 +125,10 @@ const Admin: React.FC = () => {
 
         if (productError) throw productError
 
-        // Handle image updates
-        if (productData.existingImages) {
-          // Remove images that are no longer in existingImages
-          const existingImageIds = productData.existingImages.map((img: any) => img.id)
-          const currentImageIds = editingProduct.images?.map(img => img.id) || []
-          const imagesToDelete = currentImageIds.filter(id => !existingImageIds.includes(id))
-          
-          if (imagesToDelete.length > 0) {
-            await supabase
-              .from('product_images')
-              .delete()
-              .in('id', imagesToDelete)
-          }
-        }
+        // Delete existing variants and images
+        await supabase.from('product_variants').delete().eq('product_id', editingProduct.id)
+        await supabase.from('product_images').delete().eq('product_id', editingProduct.id)
 
-        // Add new images
-        if (productData.images && productData.images.length > 0) {
-          // For demo purposes, we'll use placeholder URLs
-          // In a real app, you'd upload to storage first
-          const imageInserts = productData.images.map((file: File, index: number) => ({
-            product_id: editingProduct.id,
-            image_url: `https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600`,
-            alt_text: `${productData.name} - Image ${index + 1}`,
-            display_order: index,
-            is_primary: index === 0 && (!productData.existingImages || productData.existingImages.length === 0)
-          }))
-
-          await supabase
-            .from('product_images')
-            .insert(imageInserts)
-        }
-
-        // Update variants
-        if (productData.variants && productData.variants.length > 0) {
-          // Delete existing variants
-          await supabase
-            .from('product_variants')
-            .delete()
-            .eq('product_id', editingProduct.id)
-
-          // Insert new variants
-          const variantsToInsert = productData.variants.map((variant: any) => ({
-            ...variant,
-            product_id: editingProduct.id
-          }))
-
-          await supabase
-            .from('product_variants')
-            .insert(variantsToInsert)
-        }
       } else {
         // Create new product
         const { data: newProduct, error: productError } = await supabase
@@ -144,35 +148,62 @@ const Admin: React.FC = () => {
           .single()
 
         if (productError) throw productError
+        productId = newProduct.id
+      }
 
-        // Insert variants
-        if (productData.variants && productData.variants.length > 0) {
-          const variantsToInsert = productData.variants.map((variant: any) => ({
-            ...variant,
-            product_id: newProduct.id
-          }))
+      // Insert variants
+      if (productData.variants && productData.variants.length > 0) {
+        const variantsToInsert = productData.variants.map((variant: any) => ({
+          ...variant,
+          product_id: productId
+        }))
 
-          await supabase
-            .from('product_variants')
-            .insert(variantsToInsert)
+        const { error: variantsError } = await supabase
+          .from('product_variants')
+          .insert(variantsToInsert)
+
+        if (variantsError) throw variantsError
+      }
+
+      // Handle images
+      const imageInserts = []
+
+      // Keep existing images if editing
+      if (editingProduct && productData.existingImages) {
+        for (const existingImage of productData.existingImages) {
+          imageInserts.push({
+            product_id: productId,
+            image_url: existingImage.image_url,
+            alt_text: existingImage.alt_text,
+            display_order: existingImage.display_order,
+            is_primary: existingImage.is_primary
+          })
         }
+      }
 
-        // Insert images
-        if (productData.images && productData.images.length > 0) {
-          // For demo purposes, we'll use placeholder URLs
-          // In a real app, you'd upload to storage first
-          const imageInserts = productData.images.map((file: File, index: number) => ({
-            product_id: newProduct.id,
-            image_url: `https://images.pexels.com/photos/8839887/pexels-photo-8839887.jpeg?auto=compress&cs=tinysrgb&w=600`,
-            alt_text: `${productData.name} - Image ${index + 1}`,
-            display_order: index,
-            is_primary: index === 0
-          }))
-
-          await supabase
-            .from('product_images')
-            .insert(imageInserts)
+      // Upload new images
+      if (productData.images && productData.images.length > 0) {
+        for (let i = 0; i < productData.images.length; i++) {
+          const file = productData.images[i]
+          const imageUrl = await uploadImageToStorage(file, productId!)
+          
+          imageInserts.push({
+            product_id: productId,
+            image_url: imageUrl,
+            alt_text: `${productData.name} - Image ${imageInserts.length + 1}`,
+            display_order: imageInserts.length,
+            is_primary: imageInserts.length === 0 && (!productData.existingImages || productData.existingImages.length === 0)
+          })
         }
+      }
+
+      // Insert all images
+      if (imageInserts.length > 0) {
+        const { error: imagesError } = await supabase
+          .from('product_images')
+          .insert(imageInserts)
+
+        if (imagesError) throw imagesError
       }
 
       setShowAddProduct(false)
@@ -216,6 +247,27 @@ const Admin: React.FC = () => {
       console.error('Error updating order:', error)
       alert('Error updating order status. Please try again.')
     }
+  }
+
+  const handleExportProducts = () => {
+    try {
+      const dataStr = JSON.stringify(products, null, 2)
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
+      
+      const exportFileDefaultName = `products_export_${new Date().toISOString().split('T')[0]}.json`
+      
+      const linkElement = document.createElement('a')
+      linkElement.setAttribute('href', dataUri)
+      linkElement.setAttribute('download', exportFileDefaultName)
+      linkElement.click()
+    } catch (error) {
+      console.error('Error exporting products:', error)
+      alert('Error exporting products. Please try again.')
+    }
+  }
+
+  const handleImportProducts = () => {
+    alert('Import functionality is not yet implemented. This feature would allow you to upload a JSON file to bulk import products.')
   }
 
   const formatPrice = (price: number) => {
@@ -503,10 +555,18 @@ const Admin: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-900">All Products</h3>
                   <div className="flex items-center space-x-2">
-                    <button className="p-2 text-gray-600 hover:text-gold-600 transition-colors">
+                    <button 
+                      onClick={handleExportProducts}
+                      className="p-2 text-gray-600 hover:text-gold-600 transition-colors"
+                      title="Export Products"
+                    >
                       <Download className="w-4 h-4" />
                     </button>
-                    <button className="p-2 text-gray-600 hover:text-gold-600 transition-colors">
+                    <button 
+                      onClick={handleImportProducts}
+                      className="p-2 text-gray-600 hover:text-gold-600 transition-colors"
+                      title="Import Products"
+                    >
                       <Upload className="w-4 h-4" />
                     </button>
                   </div>
@@ -630,6 +690,7 @@ const Admin: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Search orders..."
+                
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 pr-4 py-2 border border-gold-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white/80 backdrop-blur-sm"

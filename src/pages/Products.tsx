@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Filter, Grid, List, Search, Star, Heart, ShoppingBag } from 'lucide-react'
+import { Filter, Grid, List, Star, Heart, ShoppingBag } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { supabase } from '../lib/supabase'
 import { Product, FilterState } from '../types'
@@ -33,7 +33,7 @@ const Products: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      // Fetch products with variants and images
+      // Fetch products first
       const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*')
@@ -42,7 +42,7 @@ const Products: React.FC = () => {
 
       if (productsError) throw productsError
 
-      // Fetch variants for all products
+      // Fetch all variants
       const { data: variantsData, error: variantsError } = await supabase
         .from('product_variants')
         .select('*')
@@ -50,7 +50,7 @@ const Products: React.FC = () => {
 
       if (variantsError) throw variantsError
 
-      // Fetch images for all products
+      // Fetch all images
       const { data: imagesData, error: imagesError } = await supabase
         .from('product_images')
         .select('*')
@@ -58,14 +58,14 @@ const Products: React.FC = () => {
 
       if (imagesError) throw imagesError
 
-      // Combine data
-      const productsWithDetails = productsData.map(product => ({
+      // Combine data manually
+      const productsWithDetails = productsData?.map(product => ({
         ...product,
-        variants: variantsData.filter(variant => variant.product_id === product.id),
-        images: imagesData.filter(image => image.product_id === product.id)
-      }))
+        variants: variantsData?.filter(variant => variant.product_id === product.id) || [],
+        images: imagesData?.filter(image => image.product_id === product.id) || []
+      })) || []
 
-      setProducts(productsWithDetails || [])
+      setProducts(productsWithDetails)
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
@@ -106,10 +106,6 @@ const Products: React.FC = () => {
     }
 
     setFilteredProducts(filtered)
-  }
-
-  const handleSearchChange = (query: string) => {
-    setFilters(prev => ({ ...prev, searchQuery: query }))
   }
 
   const handleAddToCart = (product: Product) => {
@@ -196,17 +192,6 @@ const Products: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={filters.searchQuery}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white text-sm"
-                />
-              </div>
-              
               <button
                 onClick={() => setIsFilterOpen(true)}
                 className="lg:hidden flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300 bg-white text-sm"
