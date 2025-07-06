@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { ShoppingBag, Menu, X, User } from 'lucide-react'
-import { useCart } from '../contexts/CartContext'
-import { useAuth } from '../contexts/AuthContext'
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ShoppingBag, Menu, X, User } from "lucide-react";
+import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { state: cartState } = useCart()
-  const { state: authState } = useAuth()
-  const location = useLocation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { state: cartState } = useCart();
+  const { state: authState } = useAuth();
+  const location = useLocation();
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Products', href: '/products' },
-    { name: 'Contact', href: '/contact' },
-  ]
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Products", href: "/products" },
+    { name: "Contact", href: "/contact" }
+  ];
 
-  const isActive = (path: string) => location.pathname === path
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-gold-200 sticky top-0 z-50">
@@ -25,9 +25,7 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-14">
           {/* Logo - Smaller */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="w-7 h-7 bg-gradient-to-r from-gold-600 to-gold-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <span className="text-white font-bold text-sm">IS</span>
-            </div>
+            <img src="/icon.png" alt="In Style BD Logo" className="w-7 h-7" />
             <span className="text-lg font-bold text-gray-900 group-hover:text-gold-600 transition-colors duration-300">
               In Style BD
             </span>
@@ -41,8 +39,8 @@ const Header: React.FC = () => {
                 to={item.href}
                 className={`relative px-2 py-1 text-sm font-medium transition-colors duration-300 ${
                   isActive(item.href)
-                    ? 'text-gold-600'
-                    : 'text-gray-700 hover:text-gold-600'
+                    ? "text-gold-600"
+                    : "text-gray-700 hover:text-gold-600"
                 }`}
               >
                 {item.name}
@@ -62,7 +60,10 @@ const Header: React.FC = () => {
               <User className="w-4 h-4" />
             </Link>
 
-            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300 group">
+            <Link
+              to="/cart"
+              className="relative p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300 group"
+            >
               <ShoppingBag className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               {cartState.itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gold-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -76,7 +77,11 @@ const Header: React.FC = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 text-gray-700 hover:text-gold-600 transition-colors duration-300"
             >
-              {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              {isMenuOpen ? (
+                <X className="w-4 h-4" />
+              ) : (
+                <Menu className="w-4 h-4" />
+              )}
             </button>
           </div>
         </div>
@@ -92,8 +97,8 @@ const Header: React.FC = () => {
                   onClick={() => setIsMenuOpen(false)}
                   className={`block px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                     isActive(item.href)
-                      ? 'text-gold-600 bg-gold-50'
-                      : 'text-gray-700 hover:text-gold-600 hover:bg-gold-50'
+                      ? "text-gold-600 bg-gold-50"
+                      : "text-gray-700 hover:text-gold-600 hover:bg-gold-50"
                   }`}
                 >
                   {item.name}
@@ -104,7 +109,7 @@ const Header: React.FC = () => {
         )}
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
