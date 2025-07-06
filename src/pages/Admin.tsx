@@ -355,8 +355,13 @@ const Admin: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo and Title */}
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-gold-500 to-gold-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Crown className="w-6 h-6 text-white" />
+              <div className="relative">
+                <img 
+                  src="/icon.png" 
+                  alt="In Style BD Logo" 
+                  className="w-10 h-10" 
+                />
+                <div className="absolute -inset-1 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full opacity-20 blur-sm"></div>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
@@ -690,7 +695,6 @@ const Admin: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Search orders..."
-                
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 pr-4 py-2 border border-gold-200 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
