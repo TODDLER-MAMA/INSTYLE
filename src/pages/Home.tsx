@@ -233,40 +233,67 @@ const Home: React.FC = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-gray-50/30 to-gray-50/60"></div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Simple Logo */}
-          <div className="flex justify-center mb-6">
-            <img src="/icon.png" alt="In Style BD Logo" className="w-12 h-12" />
-          </div>
+          {/* Brand Logo */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="flex justify-center mb-8"
+          >
+            <div className="relative">
+              <img 
+                src="/icon.png" 
+                alt="In Style BD Logo" 
+                className="w-20 h-20 drop-shadow-2xl" 
+              />
+              <div className="absolute -inset-2 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full opacity-20 blur-xl animate-pulse"></div>
+            </div>
+          </motion.div>
 
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight"
+          >
             Elegance Meets
             <span className="block bg-gradient-to-r from-gold-500 to-gold-700 bg-clip-text text-transparent">
               Tradition
             </span>
-          </h1>
+          </motion.h1>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
+          >
             Discover our curated collection of exquisite dresses, stunning
             jewelry, and premium beauty products.
-          </p>
+          </motion.p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
             <Link to="/products">
-              <Button size="md" className="group">
+              <Button size="lg" className="group">
                 Shop Now
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
 
             <Link to="/about">
-              <Button variant="outline" size="md">
+              <Button variant="outline" size="lg">
                 Learn More
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 

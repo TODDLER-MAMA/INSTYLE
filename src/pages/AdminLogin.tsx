@@ -57,11 +57,15 @@ const AdminLogin: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          {/* Logo */}
+          {/* Brand Logo */}
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="w-20 h-20 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center shadow-2xl">
-                <Crown className="w-10 h-10 text-white" />
+                <img 
+                  src="/icon.png" 
+                  alt="In Style BD Logo" 
+                  className="w-12 h-12" 
+                />
               </div>
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold-400 rounded-full animate-pulse"></div>
             </div>
@@ -71,6 +75,9 @@ const AdminLogin: React.FC = () => {
             Admin Access
           </h2>
           <p className="text-gray-600 text-lg">
+            In Style BD Management Portal
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
             Restricted access for authorized personnel only
           </p>
         </motion.div>
@@ -170,7 +177,10 @@ const AdminLogin: React.FC = () => {
                     className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                   />
                 ) : (
-                  'Access Admin Panel'
+                  <>
+                    <Crown className="w-5 h-5 mr-2" />
+                    Access Admin Panel
+                  </>
                 )}
               </Button>
             </form>

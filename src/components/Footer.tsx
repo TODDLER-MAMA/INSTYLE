@@ -15,9 +15,19 @@ const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="flex items-center space-x-3">
-                <img src="/icon.png" alt="In Style BD Logo" className="w-10 h-10" />
-                <span className="text-2xl font-bold text-white">In Style BD</span>
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <img 
+                    src="/icon.png" 
+                    alt="In Style BD Logo" 
+                    className="w-12 h-12" 
+                  />
+                  <div className="absolute -inset-1 bg-gradient-to-r from-gold-400 to-gold-600 rounded-full opacity-30 blur-sm"></div>
+                </div>
+                <div>
+                  <span className="text-2xl font-bold text-white">In Style BD</span>
+                  <div className="text-gold-400 text-sm font-medium">Fashion & Beauty</div>
+                </div>
               </div>
               
               <p className="text-gray-300 text-sm leading-relaxed">
